@@ -1,0 +1,23 @@
+apiVersion: brida.ai/reflex/v1alpha1
+kind: Reflex
+metadata:
+  name: context-pruner
+  version: "1"
+  displayName: Context pruner
+spec:
+  dataClass: non_sensitive
+  input:
+    maxBytes: 32768
+  questionSetRef: context-pruner-questions@1
+  questions:
+    required:
+      type: binary
+      instructions: Is this context fragment required to preserve constraints, evidence, user intent, or correct downstream reasoning?
+    redundant:
+      type: binary
+      instructions: Is this context fragment semantically redundant with information that remains available elsewhere?
+  policyRef: context-pruner-policy@1
+  branches:
+    - keep
+    - prune_candidate
+  authority: recommendation_only

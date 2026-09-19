@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "recipe": { "name": "context-pruner", "version": "1" },
+  "description": "Synthetic policy fixtures showing that protected context is never a prune candidate.",
+  "cases": [
+    {
+      "id": "pinned-is-kept",
+      "mode": "policy",
+      "input": { "candidateId": "ctx-pinned", "protection": "pinned" },
+      "answers": {
+        "required": { "type": "binary", "probabilityTrue": 0.01 },
+        "redundant": { "type": "binary", "probabilityTrue": 0.99 }
+      },
+      "expected": { "branch": "keep", "evidenceStatus": "hard_override", "reason": "protected_context" }
+    },
+    {
+      "id": "system-is-kept",
+      "mode": "policy",
+      "input": { "candidateId": "ctx-system", "protection": "system" },
+      "answers": {
+        "required": { "type": "binary", "probabilityTrue": 0.01 },
+        "redundant": { "type": "binary", "probabilityTrue": 0.99 }
+      },
+      "expected": { "branch": "keep", "evidenceStatus": "hard_override", "reason": "protected_context" }
+    },
+    {
+      "id": "removable-redundant-is-candidate",
+      "mode": "policy",
+      "input": { "candidateId": "ctx-summary-copy", "protection": "removable" },
+      "answers": {
+        "required": { "type": "binary", "probabilityTrue": 0.04 },
+        "redundant": { "type": "binary", "probabilityTrue": 0.96 }
+      },
+      "expected": {
+        "branch": "prune_candidate",
+        "evidenceStatus": "resolved",
+        "reason": "removable_redundant_context",
+        "candidateId": "ctx-summary-copy"
+      }
+    }
+  ]
+}

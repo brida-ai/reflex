@@ -2,15 +2,24 @@
 set -euo pipefail
 
 bad=0
+files=()
+while IFS= read -r -d '' path; do
+  files+=("$path")
+done < <(git ls-files --cached --others --exclude-standard -z)
 
-while IFS= read -r path; do
+for path in "${files[@]}"; do
+  if [[ -L "$path" ]]; then
+    echo "forbidden public symlink: $path"
+    bad=1
+    continue
+  fi
   case "$path" in
     .env|.env.*|*.pem|*.key|*.p12|*.pfx|*.jks|*.keystore)
-      echo "forbidden tracked path: $path"
+      echo "forbidden public path: $path"
       bad=1
       ;;
   esac
-done < <(git ls-files)
+done
 
 patterns=(
   'BEGIN [A-Z ]*PRIVATE KEY'
@@ -20,17 +29,30 @@ patterns=(
 )
 
 for pattern in "${patterns[@]}"; do
-  if git grep -nE "$pattern" -- . ':!scripts/public-surface-check.sh' >/tmp/public-surface-match 2>/dev/null; then
-    echo "possible secret pattern: $pattern"
-    cat /tmp/public-surface-match
+  for path in "${files[@]}"; do
+    [[ -f "$path" && ! -L "$path" ]] || continue
+    if grep -I -nE "$pattern" -- "$path" >/tmp/brida-public-match 2>/dev/null; then
+      echo "possible secret pattern in $path: $pattern"
+      cat /tmp/brida-public-match
+      bad=1
+    fi
+  done
+done
+
+context_pattern='(/home/|/Users/|private repo|internal-only|Route Passport|cnc10\.eu|brida-internal)'
+for path in "${files[@]}"; do
+  [[ -f "$path" && ! -L "$path" ]] || continue
+  case "$path" in
+    AGENTS.md|GUIDELINES.md|SECURITY.md|scripts/public-surface-check.sh)
+      continue
+      ;;
+  esac
+  if grep -I -nE "$context_pattern" -- "$path" >/tmp/brida-public-context 2>/dev/null; then
+    echo "possible private-context leak in $path:"
+    cat /tmp/brida-public-context
     bad=1
   fi
 done
 
-if git grep -nE '(/home/|/Users/|private repo|internal-only|Route Passport)' -- . ':!AGENTS.md' ':!GUIDELINES.md' ':!SECURITY.md' ':!scripts/public-surface-check.sh' >/tmp/public-surface-context 2>/dev/null; then
-  echo "possible private-context leak:"
-  cat /tmp/public-surface-context
-  bad=1
-fi
-
+rm -f /tmp/brida-public-match /tmp/brida-public-context
 exit "$bad"

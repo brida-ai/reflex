@@ -1,0 +1,28 @@
+apiVersion: brida.ai/reflex/v1alpha1
+kind: Reflex
+metadata:
+  name: agent-wakeup
+  version: "3"
+  displayName: Agent wakeup
+spec:
+  dataClass: non_sensitive
+  input:
+    maxBytes: 32768
+  questionSetRef: agent-wakeup-questions@1
+  questions:
+    actionable:
+      type: binary
+      instructions: Does this event require useful follow-up work rather than being safely ignored?
+    workClass:
+      type: choice
+      instructions: Choose the bounded work class that best matches this event.
+      criteria:
+        engineering: Software engineering, infrastructure, reliability, testing, or code work is needed.
+        other: The event does not require engineering work.
+  policyRef: agent-wakeup-policy@2
+  branches:
+    - request_human_attention
+    - wake_worker
+    - batch
+    - ignore
+  authority: recommendation_only

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "recipe": { "name": "agent-router", "version": "1" },
+  "description": "Synthetic policy fixtures showing that semantic routing cannot escape deterministic candidate authorization.",
+  "cases": [
+    {
+      "id": "route-authorized-engineering",
+      "mode": "policy",
+      "input": {
+        "authorizedCandidates": [
+          { "id": "worker-research", "routeClass": "research" },
+          { "id": "worker-engineering", "routeClass": "engineering" }
+        ]
+      },
+      "answers": {
+        "routeClass": {
+          "type": "choice",
+          "choice": "engineering",
+          "probabilities": { "engineering": 0.94, "research": 0.03, "operations": 0.01, "general": 0.01, "none": 0.01 }
+        }
+      },
+      "expected": {
+        "branch": "route_candidate",
+        "evidenceStatus": "resolved",
+        "reason": "authorized_route_candidate",
+        "candidateId": "worker-engineering"
+      }
+    },
+    {
+      "id": "route-not-authorized",
+      "mode": "policy",
+      "input": {
+        "authorizedCandidates": [
+          { "id": "worker-engineering", "routeClass": "engineering" }
+        ]
+      },
+      "answers": {
+        "routeClass": {
+          "type": "choice",
+          "choice": "research",
+          "probabilities": { "research": 0.95, "engineering": 0.02, "operations": 0.01, "general": 0.01, "none": 0.01 }
+        }
+      },
+      "expected": {
+        "branch": "batch",
+        "evidenceStatus": "resolved",
+        "reason": "no_authorized_candidate_for_route"
+      }
+    },
+    {
+      "id": "route-low-confidence",
+      "mode": "policy",
+      "input": {
+        "authorizedCandidates": [
+          { "id": "worker-engineering", "routeClass": "engineering" }
+        ]
+      },
+      "answers": {
+        "routeClass": {
+          "type": "choice",
+          "choice": "engineering",
+          "probabilities": { "engineering": 0.61, "research": 0.15, "operations": 0.1, "general": 0.08, "none": 0.06 }
+        }
+      },
+      "expected": {
+        "branch": "batch",
+        "evidenceStatus": "low_confidence",
+        "reason": "route_confidence_low"
+      }
+    }
+  ]
+}

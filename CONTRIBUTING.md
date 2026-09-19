@@ -9,6 +9,12 @@ Good-faith issues and pull requests are welcome.
 - interoperability improvements;
 - public schemas/recipes where applicable.
 
+## Recipe contributions
+
+Recipe contributions must be declarative YAML/JSON plus synthetic fixtures. Do not add executable hooks, arbitrary code, provider credentials, network destinations or instructions that claim authority to merge, release, use tools or perform protected side effects.
+
+A merged recipe is a reviewed public artifact; it is not automatic hosted activation.
+
 ## Pull requests
 1. Fork the repository and work in your branch.
 2. Do not include secrets, customer data or private Brida information.

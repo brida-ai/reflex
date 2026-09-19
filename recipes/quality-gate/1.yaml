@@ -1,0 +1,29 @@
+apiVersion: brida.ai/reflex/v1alpha1
+kind: Reflex
+metadata:
+  name: quality-gate
+  version: "1"
+  displayName: Quality gate
+spec:
+  dataClass: non_sensitive
+  input:
+    maxBytes: 32768
+  questionSetRef: quality-gate-questions@1
+  questions:
+    meetsCriteria:
+      type: binary
+      instructions: Does the candidate output satisfy the stated quality criteria and constraints?
+    defectSeverity:
+      type: choice
+      instructions: Classify the most severe quality defect present in the candidate output.
+      criteria:
+        none: No meaningful defect is present.
+        minor: A minor issue exists but does not invalidate the core result.
+        major: A substantial issue requires review or revision before use.
+        critical: A critical correctness, safety, or compliance defect makes use inappropriate.
+  policyRef: quality-gate-policy@1
+  branches:
+    - pass
+    - review
+    - stop_review
+  authority: recommendation_only

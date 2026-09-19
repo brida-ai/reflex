@@ -1,0 +1,26 @@
+apiVersion: brida.ai/reflex/v1alpha1
+kind: Reflex
+metadata:
+  name: agent-router
+  version: "1"
+  displayName: Agent router
+spec:
+  dataClass: non_sensitive
+  input:
+    maxBytes: 32768
+  questionSetRef: agent-router-questions@1
+  questions:
+    routeClass:
+      type: choice
+      instructions: Choose the bounded work class that best matches this task. Choose none when no listed class is appropriate.
+      criteria:
+        engineering: Software engineering, infrastructure, reliability, testing, or code work.
+        research: Research, analysis, evidence gathering, comparison, or synthesis work.
+        operations: Operational coordination, structured administration, or repeatable business process work.
+        general: Useful work that does not fit engineering, research, or operations.
+        none: No listed route class is appropriate or the task should not be routed automatically.
+  policyRef: agent-router-policy@1
+  branches:
+    - route_candidate
+    - batch
+  authority: recommendation_only
