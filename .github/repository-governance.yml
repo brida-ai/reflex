@@ -11,3 +11,6 @@ release_authority: brida-maintainers
 fork_ci_secrets: forbidden
 recipe_execution: declarative-only
 public_fixtures: synthetic-only
+external_pr_recipe_versions: add-only
+external_pr_examples: add-or-modify
+external_pr_control_plane_changes: denied

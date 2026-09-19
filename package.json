@@ -13,7 +13,7 @@
     "validate": "node scripts/validate-registry.mjs",
     "check:public": "bash scripts/public-surface-check.sh",
     "check": "pnpm validate && pnpm test && pnpm check:public",
-    "test": "node --test scripts/validate-registry.test.mjs"
+    "test": "node --test scripts/*.test.mjs"
   },
   "devDependencies": {
     "ajv": "^8.17.1",
