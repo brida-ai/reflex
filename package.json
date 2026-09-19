@@ -1,0 +1,23 @@
+{
+  "name": "@brida/reflex-registry",
+  "version": "0.0.0-development",
+  "private": true,
+  "description": "Public declarative schemas, official recipes and synthetic fixtures for Brida Reflex",
+  "type": "module",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@11.21.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "validate": "node scripts/validate-registry.mjs",
+    "check:public": "bash scripts/public-surface-check.sh",
+    "check": "pnpm validate && pnpm test && pnpm check:public",
+    "test": "node --test scripts/validate-registry.test.mjs"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "yaml": "^2.8.1"
+  }
+}

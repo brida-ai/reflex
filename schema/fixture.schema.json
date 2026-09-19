@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://brida.ai/schemas/reflex/v1alpha1/fixture.schema.json",
+  "title": "Brida Reflex synthetic fixture set",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "recipe", "description", "cases"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "recipe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$", "maxLength": 64 },
+        "version": { "type": "string", "pattern": "^[1-9][0-9]{0,8}$" }
+      }
+    },
+    "description": { "type": "string", "minLength": 1, "maxLength": 1000 },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": { "$ref": "#/$defs/case" }
+    }
+  },
+  "$defs": {
+    "json": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "boolean" },
+        { "type": "number" },
+        { "type": "string" },
+        { "type": "array", "items": { "$ref": "#/$defs/json" } },
+        { "type": "object", "additionalProperties": { "$ref": "#/$defs/json" } }
+      ]
+    },
+    "probability": { "type": "number", "minimum": 0, "maximum": 1 },
+    "binaryAnswer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "probabilityTrue"],
+      "properties": {
+        "type": { "const": "binary" },
+        "probabilityTrue": { "$ref": "#/$defs/probability" }
+      }
+    },
+    "choiceAnswer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "choice"],
+      "properties": {
+        "type": { "const": "choice" },
+        "choice": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "probabilities": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/probability" }
+        }
+      }
+    },
+    "scoreAnswer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "score"],
+      "properties": {
+        "type": { "const": "score" },
+        "score": { "type": "number" },
+        "probabilities": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/probability" }
+        }
+      }
+    },
+    "answer": {
+      "oneOf": [
+        { "$ref": "#/$defs/binaryAnswer" },
+        { "$ref": "#/$defs/choiceAnswer" },
+        { "$ref": "#/$defs/scoreAnswer" }
+      ]
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["branch"],
+      "properties": {
+        "branch": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,63}$" },
+        "evidenceStatus": { "enum": ["resolved", "low_confidence", "unknown", "hard_override"] },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "candidateId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "authority": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "data": { "$ref": "#/$defs/json" }
+      }
+    },
+    "semanticCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "mode", "state", "expected"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,127}$" },
+        "mode": { "const": "semantic" },
+        "state": { "$ref": "#/$defs/json" },
+        "expected": { "$ref": "#/$defs/expected" }
+      }
+    },
+    "policyCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "mode", "input", "answers", "expected"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,127}$" },
+        "mode": { "const": "policy" },
+        "input": { "$ref": "#/$defs/json" },
+        "answers": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/answer" }
+        },
+        "expected": { "$ref": "#/$defs/expected" }
+      }
+    },
+    "case": {
+      "oneOf": [
+        { "$ref": "#/$defs/semanticCase" },
+        { "$ref": "#/$defs/policyCase" }
+      ]
+    }
+  }
+}

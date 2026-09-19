@@ -1,0 +1,26 @@
+apiVersion: brida.ai/reflex/v1alpha1
+kind: Reflex
+metadata:
+  name: message-triage
+  version: "1"
+  displayName: Message triage
+spec:
+  dataClass: non_sensitive
+  input:
+    maxBytes: 8192
+  questionSetRef: message-triage-questions@1
+  questions:
+    actionable:
+      type: binary
+      instructions: Does this message need follow-up?
+    category:
+      type: choice
+      instructions: Choose the best bounded category for the message.
+      criteria:
+        product: Product or engineering follow-up is needed.
+        other: The message does not fit the product category.
+  policyRef: message-triage-policy@1
+  branches:
+    - follow_up_candidate
+    - ignore
+  authority: recommendation_only

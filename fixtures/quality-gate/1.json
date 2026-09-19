@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "recipe": { "name": "quality-gate", "version": "1" },
+  "description": "Synthetic policy fixtures showing that quality evaluation recommends a branch without mutating or delivering output.",
+  "cases": [
+    {
+      "id": "quality-pass",
+      "mode": "policy",
+      "input": { "deterministicValidationFailed": false },
+      "answers": {
+        "meetsCriteria": { "type": "binary", "probabilityTrue": 0.96 },
+        "defectSeverity": { "type": "choice", "choice": "none", "probabilities": { "none": 0.93, "minor": 0.05, "major": 0.01, "critical": 0.01 } }
+      },
+      "expected": { "branch": "pass", "evidenceStatus": "resolved", "reason": "quality_threshold_met" }
+    },
+    {
+      "id": "critical-stops-review",
+      "mode": "policy",
+      "input": { "deterministicValidationFailed": false },
+      "answers": {
+        "meetsCriteria": { "type": "binary", "probabilityTrue": 0.08 },
+        "defectSeverity": { "type": "choice", "choice": "critical", "probabilities": { "none": 0.01, "minor": 0.02, "major": 0.07, "critical": 0.9 } }
+      },
+      "expected": { "branch": "stop_review", "evidenceStatus": "resolved", "reason": "critical_quality_defect" }
+    },
+    {
+      "id": "deterministic-failure-wins",
+      "mode": "policy",
+      "input": { "deterministicValidationFailed": true },
+      "answers": {
+        "meetsCriteria": { "type": "binary", "probabilityTrue": 0.99 },
+        "defectSeverity": { "type": "choice", "choice": "none", "probabilities": { "none": 0.99, "minor": 0.01, "major": 0, "critical": 0 } }
+      },
+      "expected": { "branch": "stop_review", "evidenceStatus": "hard_override", "reason": "deterministic_validation_failed" }
+    }
+  ]
+}

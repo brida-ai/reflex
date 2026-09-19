@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "recipe": { "name": "tool-risk", "version": "1" },
+  "description": "Synthetic policy fixtures showing that semantic risk is advisory and cannot create authorization.",
+  "cases": [
+    {
+      "id": "unauthorized-stays-denied",
+      "mode": "policy",
+      "input": { "deterministicallyAuthorized": false },
+      "answers": {
+        "riskLevel": { "type": "choice", "choice": "low", "probabilities": { "low": 0.98, "medium": 0.01, "high": 0.01 } },
+        "irreversible": { "type": "binary", "probabilityTrue": 0.01 }
+      },
+      "expected": {
+        "branch": "advisory_deny_candidate",
+        "evidenceStatus": "hard_override",
+        "reason": "deterministic_authority_denied",
+        "authority": "advisory_only"
+      }
+    },
+    {
+      "id": "authorized-low-risk-candidate",
+      "mode": "policy",
+      "input": { "deterministicallyAuthorized": true },
+      "answers": {
+        "riskLevel": { "type": "choice", "choice": "low", "probabilities": { "low": 0.95, "medium": 0.04, "high": 0.01 } },
+        "irreversible": { "type": "binary", "probabilityTrue": 0.03 }
+      },
+      "expected": {
+        "branch": "advisory_allow_candidate",
+        "evidenceStatus": "resolved",
+        "reason": "low_risk_authorized_candidate",
+        "authority": "advisory_only"
+      }
+    },
+    {
+      "id": "high-risk-is-reviewed",
+      "mode": "policy",
+      "input": { "deterministicallyAuthorized": true },
+      "answers": {
+        "riskLevel": { "type": "choice", "choice": "high", "probabilities": { "low": 0.01, "medium": 0.04, "high": 0.95 } },
+        "irreversible": { "type": "binary", "probabilityTrue": 0.87 }
+      },
+      "expected": {
+        "branch": "advisory_review",
+        "evidenceStatus": "resolved",
+        "reason": "review_risky_tool_use",
+        "authority": "advisory_only"
+      }
+    }
+  ]
+}

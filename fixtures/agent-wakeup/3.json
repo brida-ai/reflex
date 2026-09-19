@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "recipe": { "name": "agent-wakeup", "version": "3" },
+  "description": "Synthetic non-sensitive examples for the agent-wakeup contract.",
+  "cases": [
+    {
+      "id": "ignore-ci-green",
+      "mode": "semantic",
+      "state": {
+        "source": "github",
+        "event": "check_run",
+        "title": "CI passed",
+        "body": "All required checks succeeded."
+      },
+      "expected": { "branch": "ignore" }
+    },
+    {
+      "id": "batch-doc-request",
+      "mode": "semantic",
+      "state": {
+        "source": "github",
+        "event": "issue_comment",
+        "title": "Update docs",
+        "body": "Please refresh the setup documentation when convenient."
+      },
+      "expected": { "branch": "batch" }
+    },
+    {
+      "id": "wake-regression",
+      "mode": "semantic",
+      "state": {
+        "source": "github",
+        "event": "issue_comment",
+        "title": "Checkout regression",
+        "body": "Synthetic test: checkout failures increased after the latest deployment and need engineering follow-up."
+      },
+      "expected": { "branch": "wake_worker" }
+    },
+    {
+      "id": "wake-auth-regression",
+      "mode": "semantic",
+      "state": {
+        "source": "github",
+        "event": "pull_request_review",
+        "title": "Authentication regression",
+        "body": "Synthetic test: the change breaks existing sessions and needs an engineering fix before release."
+      },
+      "expected": { "branch": "wake_worker" }
+    },
+    {
+      "id": "ignore-chatter",
+      "mode": "semantic",
+      "state": {
+        "source": "github",
+        "event": "issue_comment",
+        "title": "Thanks",
+        "body": "Nice work everyone, thank you."
+      },
+      "expected": { "branch": "ignore" }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+apiVersion: brida.ai/reflex/v1alpha1
+kind: Reflex
+metadata:
+  name: tool-risk
+  version: "1"
+  displayName: Tool risk
+spec:
+  dataClass: non_sensitive
+  input:
+    maxBytes: 32768
+  questionSetRef: tool-risk-questions@1
+  questions:
+    riskLevel:
+      type: choice
+      instructions: Classify the operational risk of the proposed tool use.
+      criteria:
+        low: Read-only or readily reversible action with bounded impact.
+        medium: Meaningful external or mutable effect that merits review or additional safeguards.
+        high: Destructive, privileged, irreversible, security-sensitive, financial, or broad-impact action.
+    irreversible:
+      type: binary
+      instructions: Could this tool use create an irreversible or difficult-to-reverse effect?
+  policyRef: tool-risk-policy@1
+  branches:
+    - advisory_allow_candidate
+    - advisory_review
+    - advisory_deny_candidate
+  authority: recommendation_only
