@@ -4,7 +4,7 @@ Open declarative schemas, official recipes and synthetic fixtures for Brida Refl
 
 Reflex is a programmable semantic decision capability for making small, typed decisions before more expensive reasoning or action. A Reflex result is a **recommendation**, not authority to perform a protected side effect.
 
-> **Developer Preview staging:** this repository remains private while release-safety gates are completed. Repository visibility is changed only after history/leak review and required public CI are ready.
+> **Developer Preview source:** this registry repository is public. Hosted Brida Reflex customer traffic remains activation-gated until the route, email, funding and exact-SHA release gates are complete. Publishing or merging a recipe here never activates hosted execution.
 
 ## What is here
 
