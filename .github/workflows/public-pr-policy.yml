@@ -2,7 +2,7 @@ name: Public PR Policy
 
 on:
   pull_request_target:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, edited, synchronize, reopened, ready_for_review]
 
 permissions:
   contents: read
@@ -13,8 +13,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  paths:
-    name: Contributor path authority
+  policy:
+    name: Contributor path + release metadata
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -24,7 +24,7 @@ jobs:
           ref: ${{ github.event.pull_request.base.sha }}
           persist-credentials: false
 
-      - name: Read pull-request file metadata without checking out fork code
+      - name: Materialize pull-request metadata without checking out fork code
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
@@ -36,6 +36,7 @@ jobs:
               per_page: 100,
             })
             fs.writeFileSync('.pr-files.json', JSON.stringify(files.map(({ filename, status }) => ({ filename, status }))))
+            fs.writeFileSync('.pr-body.md', context.payload.pull_request.body || '')
 
       - name: Enforce external contributor path authority
         shell: bash
@@ -45,3 +46,6 @@ jobs:
             args+=(--external)
           fi
           node scripts/check-pr-files.mjs "${args[@]}"
+
+      - name: Enforce release and QA metadata
+        run: node scripts/check-pr-metadata.mjs .pr-body.md
