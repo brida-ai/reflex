@@ -1,0 +1,393 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://brida.ai/schemas/reflex/v1alpha1/custom-reflex-draft.schema.json",
+  "title": "Brida Custom Reflex draft",
+  "description": "Portable public contract for one Organization-private declarative Custom Reflex draft. Repository validation does not activate hosted execution.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "version",
+    "name",
+    "max_state_bytes",
+    "data_class",
+    "question_set_version",
+    "questions",
+    "policy_version",
+    "declarative_policy",
+    "fixtures"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "#/$defs/reflexId"
+    },
+    "version": {
+      "$ref": "#/$defs/version"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "max_state_bytes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 262144
+    },
+    "data_class": {
+      "const": "non_sensitive"
+    },
+    "question_set_version": {
+      "$ref": "#/$defs/versionedRef"
+    },
+    "questions": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 32,
+      "propertyNames": {
+        "pattern": "^[a-z][A-Za-z0-9_]{0,63}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/question"
+      }
+    },
+    "policy_version": {
+      "$ref": "#/$defs/versionedRef"
+    },
+    "declarative_policy": {
+      "$ref": "#/$defs/declarativePolicy"
+    },
+    "fixtures": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": {
+        "$ref": "#/$defs/fixture"
+      }
+    }
+  },
+  "$defs": {
+    "reflexId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+      "maxLength": 64
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]{0,8}$"
+    },
+    "versionedRef": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._@-]{0,127}$"
+    },
+    "branch": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,63}$"
+    },
+    "questionId": {
+      "type": "string",
+      "pattern": "^[a-z][A-Za-z0-9_]{0,63}$"
+    },
+    "decisionInput": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        {
+          "type": "object"
+        },
+        {
+          "type": "array"
+        }
+      ]
+    },
+    "binaryQuestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "instructions"
+      ],
+      "properties": {
+        "type": {
+          "const": "binary"
+        },
+        "instructions": {
+          "$ref": "#/$defs/decisionInput"
+        },
+        "criteria": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "true": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/decisionInput"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "false": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/decisionInput"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "choiceQuestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "instructions",
+        "criteria"
+      ],
+      "properties": {
+        "type": {
+          "const": "choice"
+        },
+        "instructions": {
+          "$ref": "#/$defs/decisionInput"
+        },
+        "criteria": {
+          "type": "object",
+          "minProperties": 2,
+          "maxProperties": 32,
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/decisionInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "scoreQuestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "instructions",
+        "criteria"
+      ],
+      "properties": {
+        "type": {
+          "const": "score"
+        },
+        "instructions": {
+          "$ref": "#/$defs/decisionInput"
+        },
+        "criteria": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 32,
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/decisionInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "question": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/binaryQuestion"
+        },
+        {
+          "$ref": "#/$defs/choiceQuestion"
+        },
+        {
+          "$ref": "#/$defs/scoreQuestion"
+        }
+      ]
+    },
+    "binaryPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "questionId",
+        "trueBranch",
+        "falseBranch",
+        "uncertainBranch",
+        "trueWhenProbabilityAtLeast",
+        "falseWhenProbabilityAtMost"
+      ],
+      "properties": {
+        "type": {
+          "const": "binary"
+        },
+        "questionId": {
+          "$ref": "#/$defs/questionId"
+        },
+        "trueBranch": {
+          "$ref": "#/$defs/branch"
+        },
+        "falseBranch": {
+          "$ref": "#/$defs/branch"
+        },
+        "uncertainBranch": {
+          "$ref": "#/$defs/branch"
+        },
+        "trueWhenProbabilityAtLeast": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "falseWhenProbabilityAtMost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "choicePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "questionId",
+        "branches",
+        "minimumSelectedProbability",
+        "uncertainBranch"
+      ],
+      "properties": {
+        "type": {
+          "const": "choice"
+        },
+        "questionId": {
+          "$ref": "#/$defs/questionId"
+        },
+        "branches": {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 32,
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/branch"
+          }
+        },
+        "minimumSelectedProbability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "uncertainBranch": {
+          "$ref": "#/$defs/branch"
+        }
+      }
+    },
+    "scorePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "questionId",
+        "thresholds",
+        "belowBranch"
+      ],
+      "properties": {
+        "type": {
+          "const": "score"
+        },
+        "questionId": {
+          "$ref": "#/$defs/questionId"
+        },
+        "thresholds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "atLeast",
+              "branch"
+            ],
+            "properties": {
+              "atLeast": {
+                "type": "number"
+              },
+              "branch": {
+                "$ref": "#/$defs/branch"
+              }
+            }
+          }
+        },
+        "belowBranch": {
+          "$ref": "#/$defs/branch"
+        }
+      }
+    },
+    "declarativePolicy": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/binaryPolicy"
+        },
+        {
+          "$ref": "#/$defs/choicePolicy"
+        },
+        {
+          "$ref": "#/$defs/scorePolicy"
+        }
+      ]
+    },
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "evidenceClass",
+        "state",
+        "expectedBranch"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+        },
+        "evidenceClass": {
+          "enum": [
+            "synthetic",
+            "redacted"
+          ]
+        },
+        "state": {},
+        "expectedBranch": {
+          "$ref": "#/$defs/branch"
+        }
+      }
+    }
+  }
+}
