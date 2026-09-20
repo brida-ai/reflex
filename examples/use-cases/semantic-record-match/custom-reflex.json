@@ -1,0 +1,75 @@
+{
+  "id": "semantic-record-match",
+  "version": "1",
+  "name": "Semantic record match",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "semantic-record-match-questions@1",
+  "questions": {
+    "relation": {
+      "type": "choice",
+      "instructions": "Classify whether the two supplied normalized records plausibly refer to the same entity. Use only the supplied comparison fields and deterministic signals.",
+      "criteria": {
+        "same_entity": "Names, category and disambiguating facts are materially consistent with one entity and no supplied hard conflict exists.",
+        "different_entity": "A supplied disambiguating fact materially conflicts, making the records different entities.",
+        "insufficient": "The available facts are too sparse, mixed or ambiguous to decide reliably."
+      }
+    }
+  },
+  "policy_version": "semantic-record-match-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "relation",
+    "branches": {
+      "same_entity": "match_candidate",
+      "different_entity": "different",
+      "insufficient": "review"
+    },
+    "minimumSelectedProbability": 0.84,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-alias-match",
+      "evidenceClass": "synthetic",
+      "state": {
+        "left": {
+          "name": "Northwind Research Labs",
+          "category": "research_company",
+          "city": "Example City"
+        },
+        "right": {
+          "name": "Northwind Labs",
+          "category": "research_company",
+          "city": "Example City"
+        },
+        "deterministicSignals": {
+          "exactIdentifierMatch": false,
+          "hardConflict": false
+        }
+      },
+      "expectedBranch": "match_candidate"
+    },
+    {
+      "id": "synthetic-hard-conflict",
+      "evidenceClass": "synthetic",
+      "state": {
+        "left": {
+          "name": "Atlas Studio",
+          "category": "design_agency",
+          "city": "Example City"
+        },
+        "right": {
+          "name": "Atlas Studio",
+          "category": "medical_clinic",
+          "city": "Different City"
+        },
+        "deterministicSignals": {
+          "exactIdentifierMatch": false,
+          "hardConflict": true
+        }
+      },
+      "expectedBranch": "different"
+    }
+  ]
+}
