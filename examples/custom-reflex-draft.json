@@ -1,0 +1,44 @@
+{
+  "id": "lead-fit",
+  "version": "1",
+  "name": "Lead fit",
+  "max_state_bytes": 8192,
+  "data_class": "non_sensitive",
+  "question_set_version": "lead-fit-questions@1",
+  "questions": {
+    "qualified": {
+      "type": "binary",
+      "instructions": "Is this lead a good fit for the stated ICP?"
+    }
+  },
+  "policy_version": "lead-fit-policy@1",
+  "declarative_policy": {
+    "type": "binary",
+    "questionId": "qualified",
+    "trueBranch": "qualified",
+    "falseBranch": "ignore",
+    "uncertainBranch": "review",
+    "trueWhenProbabilityAtLeast": 0.8,
+    "falseWhenProbabilityAtMost": 0.2
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-qualified",
+      "evidenceClass": "synthetic",
+      "state": {
+        "company": "Synthetic Co",
+        "employeeCount": 25
+      },
+      "expectedBranch": "qualified"
+    },
+    {
+      "id": "synthetic-ignore",
+      "evidenceClass": "synthetic",
+      "state": {
+        "company": "Example Hobby Project",
+        "employeeCount": 1
+      },
+      "expectedBranch": "ignore"
+    }
+  ]
+}
