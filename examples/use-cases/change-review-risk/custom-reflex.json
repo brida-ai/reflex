@@ -1,0 +1,59 @@
+{
+  "id": "change-review-risk",
+  "version": "1",
+  "name": "Change review risk",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "change-review-risk-questions@1",
+  "questions": {
+    "reviewDepth": {
+      "type": "choice",
+      "instructions": "Classify the review depth warranted by the supplied change summary after the listed deterministic checks. Judge only semantic risk and review needs, not merge eligibility.",
+      "criteria": {
+        "routine": "Localized, reversible or low-impact change with no material security, compatibility, reliability or data-handling concern in the supplied evidence.",
+        "focused": "A bounded subsystem or behavior change needs targeted human review but no supplied fact indicates broad protected impact.",
+        "specialist": "The supplied change materially affects security boundaries, compatibility, reliability, permissions, sensitive data handling or another protected subsystem."
+      }
+    }
+  },
+  "policy_version": "change-review-risk-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "reviewDepth",
+    "branches": {
+      "routine": "routine_review",
+      "focused": "focused_review",
+      "specialist": "specialist_review"
+    },
+    "minimumSelectedProbability": 0.82,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-doc-copy",
+      "evidenceClass": "synthetic",
+      "state": {
+        "changeSummary": "Clarifies public documentation wording without changing code, configuration or workflow files.",
+        "affectedComponents": ["documentation"],
+        "deterministicChecks": {
+          "tests": "not_applicable",
+          "protectedPaths": "clear"
+        }
+      },
+      "expectedBranch": "routine_review"
+    },
+    {
+      "id": "synthetic-auth-boundary",
+      "evidenceClass": "synthetic",
+      "state": {
+        "changeSummary": "Changes authorization checks around a privileged administrative action and alters a permission mapping.",
+        "affectedComponents": ["authorization", "admin_api"],
+        "deterministicChecks": {
+          "tests": "pass",
+          "protectedPaths": "requires_review"
+        }
+      },
+      "expectedBranch": "specialist_review"
+    }
+  ]
+}
