@@ -1,0 +1,46 @@
+{
+  "id": "replace-binary-id",
+  "version": "1",
+  "name": "Replace binary name",
+  "max_state_bytes": 8192,
+  "data_class": "non_sensitive",
+  "question_set_version": "replace-binary-questions@1",
+  "questions": {
+    "decision": {
+      "type": "binary",
+      "instructions": "State the bounded yes/no judgment.",
+      "criteria": {
+        "true": "Describe the positive condition.",
+        "false": "Describe the negative condition."
+      }
+    }
+  },
+  "policy_version": "replace-binary-policy@1",
+  "declarative_policy": {
+    "type": "binary",
+    "questionId": "decision",
+    "trueBranch": "yes",
+    "falseBranch": "no",
+    "uncertainBranch": "review",
+    "trueWhenProbabilityAtLeast": 0.8,
+    "falseWhenProbabilityAtMost": 0.2
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-yes",
+      "evidenceClass": "synthetic",
+      "state": {
+        "example": "Replace with synthetic positive state"
+      },
+      "expectedBranch": "yes"
+    },
+    {
+      "id": "synthetic-no",
+      "evidenceClass": "synthetic",
+      "state": {
+        "example": "Replace with synthetic negative state"
+      },
+      "expectedBranch": "no"
+    }
+  ]
+}

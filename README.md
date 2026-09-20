@@ -13,7 +13,7 @@ Reflex is a programmable semantic decision capability for making small, typed de
 - `schema/custom-reflex-draft.schema.json` — portable Organization-private Custom Reflex draft contract.
 - `recipes/<id>/<version>.yaml` — immutable official declarative recipe versions.
 - `fixtures/<id>/<version>.json` — synthetic examples and policy fixtures aligned to one immutable recipe version.
-- `examples/` — official recipe and Custom Reflex authoring examples.
+- `examples/` — official recipe, Custom Reflex authoring examples, and real-world synthetic use cases.\n- `templates/` — copyable Binary / Choice / Score Custom Reflex starters.
 
 ## What is not here
 
@@ -57,7 +57,7 @@ Recipes are data. Arbitrary code, tool definitions, provider credentials, networ
 
 ## Custom Reflex draft
 
-`examples/custom-reflex-draft.json` shows the portable draft body used by the public REST/SDK authoring surface. It is deliberately bounded:
+`examples/custom-reflex-draft.json` shows the smallest portable draft body used by the public REST/SDK authoring surface. For copyable starters see `templates/`; for realistic patterns see `examples/use-cases/`. It is deliberately bounded:
 
 - Organization-private by hosted authorization; the tenant identifier never belongs in the portable document.
 - `non_sensitive` during Free Preview.

@@ -1,0 +1,55 @@
+{
+  "id": "customer-support-ticket-triage",
+  "version": "1",
+  "name": "Customer support ticket triage",
+  "max_state_bytes": 8192,
+  "data_class": "non_sensitive",
+  "question_set_version": "customer-support-ticket-triage-questions@1",
+  "questions": {
+    "route": {
+      "type": "choice",
+      "instructions": "Choose the smallest appropriate handling path for this support ticket. Use only the supplied issue summary, product area, customer impact and stated urgency.",
+      "criteria": {
+        "urgent_human": "Material outage, security concern, payment lockout, or explicit severe business impact that needs prompt human review.",
+        "standard_queue": "Legitimate support request that needs a normal support workflow but is not urgent.",
+        "self_serve": "Clearly informational or already answered by the supplied known-resolution context."
+      }
+    }
+  },
+  "policy_version": "customer-support-ticket-triage-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "route",
+    "branches": {
+      "urgent_human": "escalate",
+      "standard_queue": "queue",
+      "self_serve": "self_serve"
+    },
+    "minimumSelectedProbability": 0.75,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-outage",
+      "evidenceClass": "synthetic",
+      "state": {
+        "productArea": "checkout",
+        "summary": "All checkout attempts fail after the latest deploy.",
+        "customerImpact": "Sales team cannot process any orders.",
+        "urgency": "high"
+      },
+      "expectedBranch": "escalate"
+    },
+    {
+      "id": "synthetic-howto",
+      "evidenceClass": "synthetic",
+      "state": {
+        "productArea": "profile",
+        "summary": "Where can I change the display name?",
+        "knownResolution": "Settings > Profile > Display name",
+        "urgency": "low"
+      },
+      "expectedBranch": "self_serve"
+    }
+  ]
+}

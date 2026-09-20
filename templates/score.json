@@ -1,0 +1,55 @@
+{
+  "id": "replace-score-id",
+  "version": "1",
+  "name": "Replace score name",
+  "max_state_bytes": 8192,
+  "data_class": "non_sensitive",
+  "question_set_version": "replace-score-questions@1",
+  "questions": {
+    "decision": {
+      "type": "score",
+      "instructions": "Score the supplied state against this explicit rubric.",
+      "criteria": [
+        "1: clearly below the required bar",
+        "2: below the required bar",
+        "3: borderline",
+        "4: meets the required bar",
+        "5: clearly exceeds the required bar"
+      ]
+    }
+  },
+  "policy_version": "replace-score-policy@1",
+  "declarative_policy": {
+    "type": "score",
+    "questionId": "decision",
+    "thresholds": [
+      {
+        "atLeast": 4,
+        "branch": "pass"
+      },
+      {
+        "atLeast": 3,
+        "branch": "review"
+      }
+    ],
+    "belowBranch": "fail"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-pass",
+      "evidenceClass": "synthetic",
+      "state": {
+        "example": "Replace with synthetic state that meets the rubric"
+      },
+      "expectedBranch": "pass"
+    },
+    {
+      "id": "synthetic-fail",
+      "evidenceClass": "synthetic",
+      "state": {
+        "example": "Replace with synthetic state that misses the rubric"
+      },
+      "expectedBranch": "fail"
+    }
+  ]
+}

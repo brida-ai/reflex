@@ -1,0 +1,55 @@
+{
+  "id": "work-priority",
+  "version": "1",
+  "name": "Work priority reflex",
+  "max_state_bytes": 8192,
+  "data_class": "non_sensitive",
+  "question_set_version": "work-priority-questions@1",
+  "questions": {
+    "priority": {
+      "type": "choice",
+      "instructions": "Choose the appropriate scheduling class for this task from urgency, deadline, blocker status and stated business impact.",
+      "criteria": {
+        "now": "Time-sensitive work that should enter the active queue now.",
+        "later": "Useful work with no immediate deadline or blocker.",
+        "escalate": "Overdue or materially blocked work whose consequence warrants human attention."
+      }
+    }
+  },
+  "policy_version": "work-priority-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "priority",
+    "branches": {
+      "now": "run_now",
+      "later": "defer",
+      "escalate": "human_attention"
+    },
+    "minimumSelectedProbability": 0.78,
+    "uncertainBranch": "human_attention"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-later",
+      "evidenceClass": "synthetic",
+      "state": {
+        "task": "Refresh optional demo screenshots",
+        "deadline": "none",
+        "blocksRelease": false,
+        "impact": "cosmetic improvement"
+      },
+      "expectedBranch": "defer"
+    },
+    {
+      "id": "synthetic-overdue",
+      "evidenceClass": "synthetic",
+      "state": {
+        "task": "Restore failed signup verification",
+        "deadline": "overdue",
+        "blocksRelease": true,
+        "impact": "new users cannot complete signup"
+      },
+      "expectedBranch": "human_attention"
+    }
+  ]
+}
