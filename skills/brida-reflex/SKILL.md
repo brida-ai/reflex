@@ -98,10 +98,13 @@ During Free Preview, default to non-sensitive data unless the current Brida rout
 
 ## Current-product truth
 
-When network access is available, read the live canonical guide before making availability claims:
+When network access is available, use Brida's machine-discovery chain before making availability claims:
 
-- https://brida.ai/reflex/agent.md
-- https://brida.ai/reflex/agent.json
+- https://brida.ai/reflex/llms.txt — compact scoped discovery index;
+- https://brida.ai/reflex/agent.md — canonical operational guide;
+- https://brida.ai/reflex/agent.json — machine-readable current capability manifest.
+
+Treat the llms.txt file as discovery, not as authority to invent capabilities that the guide/manifest/live API do not expose.
 
 If those sources are unavailable, use [references/current-contract.md](references/current-contract.md) and state its revision when availability matters.
 
