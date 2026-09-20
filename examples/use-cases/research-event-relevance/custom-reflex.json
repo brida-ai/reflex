@@ -1,0 +1,57 @@
+{
+  "id": "research-event-relevance",
+  "version": "1",
+  "name": "Research event relevance",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "research-event-relevance-questions@1",
+  "questions": {
+    "relevance": {
+      "type": "choice",
+      "instructions": "Classify the supplied event by its material relevance and stated consequence for the explicit research question.",
+      "criteria": {
+        "irrelevant": "The event does not materially bear on the stated research question.",
+        "relevant": "The event directly bears on the research question and warrants follow-up research or verification.",
+        "urgent": "The event directly bears on the research question and the supplied facts indicate a material time-sensitive or high-consequence change needing prompt human attention."
+      }
+    }
+  },
+  "policy_version": "research-event-relevance-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "relevance",
+    "branches": {
+      "irrelevant": "ignore",
+      "relevant": "research_candidate",
+      "urgent": "human_attention"
+    },
+    "minimumSelectedProbability": 0.78,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-unrelated-event",
+      "evidenceClass": "synthetic",
+      "state": {
+        "researchQuestion": "Will the Example Protocol change its authentication flow?",
+        "event": "A separate design-tool vendor announced new illustration templates.",
+        "sourceClass": "synthetic_vendor_update",
+        "freshness": "new",
+        "duplicate": false
+      },
+      "expectedBranch": "ignore"
+    },
+    {
+      "id": "synthetic-relevant-amendment",
+      "evidenceClass": "synthetic",
+      "state": {
+        "researchQuestion": "Will the Example Protocol change its authentication flow?",
+        "event": "The protocol maintainer published an approved amendment changing the authentication handshake in the next version.",
+        "sourceClass": "synthetic_primary_source",
+        "freshness": "new",
+        "duplicate": false
+      },
+      "expectedBranch": "research_candidate"
+    }
+  ]
+}
