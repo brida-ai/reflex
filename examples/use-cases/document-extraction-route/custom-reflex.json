@@ -1,0 +1,57 @@
+{
+  "id": "document-extraction-route",
+  "version": "1",
+  "name": "Document extraction route",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "document-extraction-route-questions@1",
+  "questions": {
+    "route": {
+      "type": "choice",
+      "instructions": "Recommend the bounded extraction path using only the supplied parser, text-layer and validation evidence.",
+      "criteria": {
+        "clean_text": "Parsed text is coherent, structurally plausible and has no supplied material extraction failure.",
+        "ocr_candidate": "The document is consistent with a scan or image and deterministic parsing produced empty, unusable or severely garbled text.",
+        "review": "Evidence is mixed, contradictory or insufficient to choose either extraction path reliably."
+      }
+    }
+  },
+  "policy_version": "document-extraction-route-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "route",
+    "branches": {
+      "clean_text": "continue_local",
+      "ocr_candidate": "try_ocr",
+      "review": "review"
+    },
+    "minimumSelectedProbability": 0.78,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-clean-text",
+      "evidenceClass": "synthetic",
+      "state": {
+        "fileType": "pdf",
+        "parserStatus": "success",
+        "textLayer": true,
+        "textQuality": "Coherent paragraphs and expected headings are present.",
+        "deterministicValidation": "required structure present"
+      },
+      "expectedBranch": "continue_local"
+    },
+    {
+      "id": "synthetic-scan",
+      "evidenceClass": "synthetic",
+      "state": {
+        "fileType": "pdf",
+        "parserStatus": "success_empty_text",
+        "textLayer": false,
+        "textQuality": "No machine-readable text was extracted; pages are reported as raster images.",
+        "deterministicValidation": "cannot validate fields without text"
+      },
+      "expectedBranch": "try_ocr"
+    }
+  ]
+}
