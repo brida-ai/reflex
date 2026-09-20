@@ -54,6 +54,14 @@ spec:
 
 Recipes are data. Arbitrary code, tool definitions, provider credentials, network destinations and executable hooks do not belong in the recipe schema.
 
+## Agent Skill
+
+The repository also ships a portable Brida Reflex Skill for AI agents at `skills/brida-reflex/`.
+
+Use it when an agent needs to audit a project or workflow for Reflex opportunities, choose the smallest current MCP/REST/SDK integration path, or draft a bounded Custom Reflex without pretending unavailable hosted capability is live.
+
+The Skill treats the live Brida agent guide/manifest as the current availability source and keeps Reflex output recommendation-only.
+
 ## Data class
 
 A recipe's `dataClass` is part of its immutable contract. Do not send data outside that declared class. In particular, `non_sensitive` recipes are not an approved channel for sensitive personal or regulated data.
