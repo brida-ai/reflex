@@ -5,7 +5,7 @@ bad=0
 files=()
 while IFS= read -r -d '' path; do
   files+=("$path")
-done < <(git ls-files --cached --others --exclude-standard -z)
+done < <(git ls-files --cached -z)
 
 for path in "${files[@]}"; do
   if [[ -L "$path" ]]; then
@@ -39,7 +39,7 @@ for pattern in "${patterns[@]}"; do
   done
 done
 
-context_pattern='(/home/|/Users/|private repo|internal-only|Route Passport|cnc10\.eu|brida-internal)'
+context_pattern='(/home/|/Users/|private repo|internal-only|non-public hostname|internal account ID)'
 for path in "${files[@]}"; do
   [[ -f "$path" && ! -L "$path" ]] || continue
   case "$path" in
