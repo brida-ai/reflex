@@ -10,9 +10,10 @@ Reflex is a programmable semantic decision capability for making small, typed de
 
 - `schema/reflex.schema.json` — public `brida.ai/reflex/v1alpha1` recipe schema.
 - `schema/fixture.schema.json` — synthetic fixture-set schema.
+- `schema/custom-reflex-draft.schema.json` — portable Organization-private Custom Reflex draft contract.
 - `recipes/<id>/<version>.yaml` — immutable official declarative recipe versions.
 - `fixtures/<id>/<version>.json` — synthetic examples and policy fixtures aligned to one immutable recipe version.
-- `examples/` — recipe authoring examples.
+- `examples/` — official recipe and Custom Reflex authoring examples.
 
 ## What is not here
 
@@ -53,6 +54,19 @@ spec:
 ```
 
 Recipes are data. Arbitrary code, tool definitions, provider credentials, network destinations and executable hooks do not belong in the recipe schema.
+
+## Custom Reflex draft
+
+`examples/custom-reflex-draft.json` shows the portable draft body used by the public REST/SDK authoring surface. It is deliberately bounded:
+
+- Organization-private by hosted authorization; the tenant identifier never belongs in the portable document.
+- `non_sensitive` during Free Preview.
+- Binary / Choice / Score semantic questions only.
+- Declarative branch policy only.
+- 1–32 synthetic or redacted fixtures, each with an explicit expected branch.
+- No executable hooks, tools, network destinations, provider credentials, or side-effect authority.
+
+A draft is not executable merely because it validates here. Hosted activation is a separate authenticated operation and may perform additional fixture evaluation, capacity, route-admission, and release checks.
 
 ## Agent Skill
 

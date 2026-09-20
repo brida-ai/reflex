@@ -27,7 +27,34 @@ async function withSandbox(run) {
 
 test('validates the current public registry', async () => {
   const result = await validateRegistry(sourceRoot)
-  assert.deepEqual(result, { recipeVersions: 5, fixtureSets: 5, examples: 1 })
+  assert.deepEqual(result, { recipeVersions: 5, fixtureSets: 5, examples: 1, customDraftExamples: 1 })
+})
+
+test('rejects a Custom Reflex fixture branch that its policy cannot produce', async () => {
+  await withSandbox(async (root) => {
+    const path = join(root, 'examples', 'custom-reflex-draft.json')
+    const draft = JSON.parse(await readFile(path, 'utf8'))
+    draft.fixtures[0].expectedBranch = 'ship_to_production'
+    await writeFile(path, JSON.stringify(draft, null, 2))
+    await assert.rejects(() => validateRegistry(root), /expected branch is not reachable by policy/u)
+  })
+})
+
+test('rejects a Custom Reflex policy whose question type does not match', async () => {
+  await withSandbox(async (root) => {
+    const path = join(root, 'examples', 'custom-reflex-draft.json')
+    const draft = JSON.parse(await readFile(path, 'utf8'))
+    draft.declarative_policy.type = 'score'
+    draft.declarative_policy.thresholds = [{ atLeast: 0.5, branch: 'qualified' }]
+    draft.declarative_policy.belowBranch = 'ignore'
+    delete draft.declarative_policy.trueBranch
+    delete draft.declarative_policy.falseBranch
+    delete draft.declarative_policy.uncertainBranch
+    delete draft.declarative_policy.trueWhenProbabilityAtLeast
+    delete draft.declarative_policy.falseWhenProbabilityAtMost
+    await writeFile(path, JSON.stringify(draft, null, 2))
+    await assert.rejects(() => validateRegistry(root), /policy question type does not match/u)
+  })
 })
 
 test('rejects a fixture branch that its recipe does not declare', async () => {

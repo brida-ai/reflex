@@ -20,11 +20,13 @@ export async function validateRegistry(rootDirectory = DEFAULT_ROOT) {
 
   const recipeSchema = JSON.parse(await readBounded(join(schemaDir, 'reflex.schema.json'), MAX_RECIPE_BYTES, root))
   const fixtureSchema = JSON.parse(await readBounded(join(schemaDir, 'fixture.schema.json'), MAX_RECIPE_BYTES, root))
+  const customDraftSchema = JSON.parse(await readBounded(join(schemaDir, 'custom-reflex-draft.schema.json'), MAX_RECIPE_BYTES, root))
 
   const ajv = new Ajv2020({ allErrors: true, strict: true })
   addFormats(ajv)
   const validateRecipeSchema = ajv.compile(recipeSchema)
   const validateFixtureSchema = ajv.compile(fixtureSchema)
+  const validateCustomDraftSchema = ajv.compile(customDraftSchema)
 
   const recipes = new Map()
   for (const relativePath of await versionedFiles(recipeDir, '.yaml')) {
@@ -67,7 +69,18 @@ export async function validateRegistry(rootDirectory = DEFAULT_ROOT) {
     examples += 1
   }
 
-  return Object.freeze({ recipeVersions: recipes.size, fixtureSets: fixtureKeys.size, examples })
+  const customExamplePath = join(exampleDir, 'custom-reflex-draft.json')
+  const customDraft = JSON.parse(await readBounded(customExamplePath, MAX_FIXTURE_BYTES, root))
+  assertJsonDepth(customDraft, 'examples/custom-reflex-draft.json')
+  assertSchema(validateCustomDraftSchema, customDraft, 'examples/custom-reflex-draft.json')
+  validateCustomDraftCoherence(customDraft)
+
+  return Object.freeze({
+    recipeVersions: recipes.size,
+    fixtureSets: fixtureKeys.size,
+    examples,
+    customDraftExamples: 1,
+  })
 }
 
 async function parseRecipe(path, root) {
@@ -124,6 +137,61 @@ function validateFixtureCoherence(file, fixture, recipe) {
         assert(probabilitySum <= 1.000001, `fixtures/${file}#${item.id}: choice probabilities exceed 1`)
       }
     }
+  }
+}
+
+function validateCustomDraftCoherence(draft) {
+  const policy = draft.declarative_policy
+  const question = draft.questions[policy.questionId]
+  assert(question !== undefined, 'examples/custom-reflex-draft.json: policy references unknown question')
+  assert(question.type === policy.type, 'examples/custom-reflex-draft.json: policy question type does not match')
+
+  const branches = new Set()
+  if (policy.type === 'binary') {
+    assert(
+      policy.falseWhenProbabilityAtMost <= policy.trueWhenProbabilityAtLeast,
+      'examples/custom-reflex-draft.json: binary thresholds overlap',
+    )
+    branches.add(policy.trueBranch)
+    branches.add(policy.falseBranch)
+    branches.add(policy.uncertainBranch)
+  } else if (policy.type === 'choice') {
+    for (const [choice, branch] of Object.entries(policy.branches)) {
+      assert(
+        Object.hasOwn(question.criteria, choice),
+        `examples/custom-reflex-draft.json: policy choice ${choice} is not declared`,
+      )
+      branches.add(branch)
+    }
+    branches.add(policy.uncertainBranch)
+  } else {
+    let previous = Number.POSITIVE_INFINITY
+    for (const threshold of policy.thresholds) {
+      assert(
+        threshold.atLeast < previous,
+        'examples/custom-reflex-draft.json: score thresholds must be strictly descending',
+      )
+      previous = threshold.atLeast
+      branches.add(threshold.branch)
+    }
+    branches.add(policy.belowBranch)
+  }
+
+  const fixtureIds = new Set()
+  for (const fixture of draft.fixtures) {
+    assert(
+      !fixtureIds.has(fixture.id),
+      `examples/custom-reflex-draft.json: duplicate fixture id ${fixture.id}`,
+    )
+    fixtureIds.add(fixture.id)
+    assert(
+      branches.has(fixture.expectedBranch),
+      `examples/custom-reflex-draft.json#${fixture.id}: expected branch is not reachable by policy`,
+    )
+    assert(
+      Buffer.byteLength(JSON.stringify(fixture.state), 'utf8') <= draft.max_state_bytes,
+      `examples/custom-reflex-draft.json#${fixture.id}: fixture state exceeds max_state_bytes`,
+    )
   }
 }
 
@@ -191,5 +259,5 @@ function relative(path, root) {
 
 if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const result = await validateRegistry(process.argv[2] ?? DEFAULT_ROOT)
-  console.log(`registry validation: ${result.recipeVersions} recipe versions / ${result.fixtureSets} fixture sets / ${result.examples} examples / ok`)
+  console.log(`registry validation: ${result.recipeVersions} recipe versions / ${result.fixtureSets} fixture sets / ${result.examples} recipe examples / ${result.customDraftExamples} custom draft examples / ok`)
 }
