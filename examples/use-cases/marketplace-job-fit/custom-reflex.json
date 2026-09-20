@@ -22,7 +22,7 @@
     "trueBranch": "bid_candidate",
     "falseBranch": "skip",
     "uncertainBranch": "review",
-    "trueWhenProbabilityAtLeast": 0.85,
+    "trueWhenProbabilityAtLeast": 0.75,
     "falseWhenProbabilityAtMost": 0.15
   },
   "fixtures": [

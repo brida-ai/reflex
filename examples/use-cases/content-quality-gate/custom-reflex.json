@@ -10,11 +10,11 @@
       "type": "score",
       "instructions": "Score the supplied draft against the explicit audience, required facts and acceptance criteria. Judge fitness for the stated purpose, not writing style preference.",
       "criteria": [
-        "1: materially wrong or missing the required purpose",
-        "2: major omissions or contradictions",
-        "3: usable but needs meaningful revision",
-        "4: meets the stated acceptance criteria",
-        "5: clearly meets the criteria with no material issue"
+        "Materially wrong or missing the required purpose",
+        "Major omissions or contradictions",
+        "Usable but needs meaningful revision",
+        "Meets the stated acceptance criteria",
+        "Clearly meets the criteria with no material issue"
       ]
     }
   },
@@ -24,11 +24,11 @@
     "questionId": "quality",
     "thresholds": [
       {
-        "atLeast": 4,
+        "atLeast": 3.5,
         "branch": "publish_candidate"
       },
       {
-        "atLeast": 3,
+        "atLeast": 1.5,
         "branch": "revise"
       }
     ],
@@ -40,7 +40,11 @@
       "evidenceClass": "synthetic",
       "state": {
         "audience": "New users",
-        "requiredFacts": ["Free Preview", "No card required", "Recommendation only"],
+        "requiredFacts": [
+          "Free Preview",
+          "No card required",
+          "Recommendation only"
+        ],
         "draft": "Try the Free Preview with no card required. Reflex returns a recommendation; your application keeps authority over actions."
       },
       "expectedBranch": "publish_candidate"
@@ -50,7 +54,11 @@
       "evidenceClass": "synthetic",
       "state": {
         "audience": "New users",
-        "requiredFacts": ["Free Preview", "No card required", "Recommendation only"],
+        "requiredFacts": [
+          "Free Preview",
+          "No card required",
+          "Recommendation only"
+        ],
         "draft": "Use Reflex to automate everything."
       },
       "expectedBranch": "reject"

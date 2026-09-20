@@ -10,11 +10,11 @@
       "type": "score",
       "instructions": "Score the supplied state against this explicit rubric.",
       "criteria": [
-        "1: clearly below the required bar",
-        "2: below the required bar",
-        "3: borderline",
-        "4: meets the required bar",
-        "5: clearly exceeds the required bar"
+        "Clearly below the required bar",
+        "Below the required bar",
+        "Borderline",
+        "Meets the required bar",
+        "Clearly exceeds the required bar"
       ]
     }
   },
@@ -24,11 +24,11 @@
     "questionId": "decision",
     "thresholds": [
       {
-        "atLeast": 4,
+        "atLeast": 3.5,
         "branch": "pass"
       },
       {
-        "atLeast": 3,
+        "atLeast": 1.5,
         "branch": "review"
       }
     ],
