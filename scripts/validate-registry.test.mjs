@@ -10,7 +10,7 @@ const sourceRoot = new URL('..', import.meta.url).pathname
 
 async function sandbox() {
   const root = await mkdtemp(join(tmpdir(), 'brida-reflex-registry-'))
-  for (const directory of ['schema', 'recipes', 'fixtures', 'examples']) {
+  for (const directory of ['schema', 'recipes', 'fixtures', 'examples', 'templates']) {
     await cp(join(sourceRoot, directory), join(root, directory), { recursive: true })
   }
   return root
@@ -27,7 +27,7 @@ async function withSandbox(run) {
 
 test('validates the current public registry', async () => {
   const result = await validateRegistry(sourceRoot)
-  assert.deepEqual(result, { recipeVersions: 5, fixtureSets: 5, examples: 1, customDraftExamples: 1 })
+  assert.deepEqual(result, { recipeVersions: 5, fixtureSets: 5, examples: 1, customDraftExamples: 12 })
 })
 
 test('rejects a Custom Reflex fixture branch that its policy cannot produce', async () => {

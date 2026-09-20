@@ -17,6 +17,7 @@ export async function validateRegistry(rootDirectory = DEFAULT_ROOT) {
   const recipeDir = join(root, 'recipes')
   const fixtureDir = join(root, 'fixtures')
   const exampleDir = join(root, 'examples')
+  const templateDir = join(root, 'templates')
 
   const recipeSchema = JSON.parse(await readBounded(join(schemaDir, 'reflex.schema.json'), MAX_RECIPE_BYTES, root))
   const fixtureSchema = JSON.parse(await readBounded(join(schemaDir, 'fixture.schema.json'), MAX_RECIPE_BYTES, root))
@@ -69,17 +70,26 @@ export async function validateRegistry(rootDirectory = DEFAULT_ROOT) {
     examples += 1
   }
 
-  const customExamplePath = join(exampleDir, 'custom-reflex-draft.json')
-  const customDraft = JSON.parse(await readBounded(customExamplePath, MAX_FIXTURE_BYTES, root))
-  assertJsonDepth(customDraft, 'examples/custom-reflex-draft.json')
-  assertSchema(validateCustomDraftSchema, customDraft, 'examples/custom-reflex-draft.json')
-  validateCustomDraftCoherence(customDraft)
+  const customDraftPaths = [
+    join(exampleDir, 'custom-reflex-draft.json'),
+    ...(await nestedFiles(join(exampleDir, 'use-cases'), 'custom-reflex.json')),
+    ...(await files(templateDir, '.json')).map((file) => join(templateDir, file)),
+  ]
+  let customDraftExamples = 0
+  for (const customExamplePath of customDraftPaths) {
+    const label = relative(customExamplePath, root)
+    const customDraft = JSON.parse(await readBounded(customExamplePath, MAX_FIXTURE_BYTES, root))
+    assertJsonDepth(customDraft, label)
+    assertSchema(validateCustomDraftSchema, customDraft, label)
+    validateCustomDraftCoherence(customDraft, label)
+    customDraftExamples += 1
+  }
 
   return Object.freeze({
     recipeVersions: recipes.size,
     fixtureSets: fixtureKeys.size,
     examples,
-    customDraftExamples: 1,
+    customDraftExamples,
   })
 }
 
@@ -140,17 +150,17 @@ function validateFixtureCoherence(file, fixture, recipe) {
   }
 }
 
-function validateCustomDraftCoherence(draft) {
+function validateCustomDraftCoherence(draft, label = 'examples/custom-reflex-draft.json') {
   const policy = draft.declarative_policy
   const question = draft.questions[policy.questionId]
-  assert(question !== undefined, 'examples/custom-reflex-draft.json: policy references unknown question')
-  assert(question.type === policy.type, 'examples/custom-reflex-draft.json: policy question type does not match')
+  assert(question !== undefined, `${label}: policy references unknown question`)
+  assert(question.type === policy.type, `${label}: policy question type does not match`)
 
   const branches = new Set()
   if (policy.type === 'binary') {
     assert(
       policy.falseWhenProbabilityAtMost <= policy.trueWhenProbabilityAtLeast,
-      'examples/custom-reflex-draft.json: binary thresholds overlap',
+      `${label}: binary thresholds overlap`,
     )
     branches.add(policy.trueBranch)
     branches.add(policy.falseBranch)
@@ -159,7 +169,7 @@ function validateCustomDraftCoherence(draft) {
     for (const [choice, branch] of Object.entries(policy.branches)) {
       assert(
         Object.hasOwn(question.criteria, choice),
-        `examples/custom-reflex-draft.json: policy choice ${choice} is not declared`,
+        `${label}: policy choice ${choice} is not declared`,
       )
       branches.add(branch)
     }
@@ -169,7 +179,7 @@ function validateCustomDraftCoherence(draft) {
     for (const threshold of policy.thresholds) {
       assert(
         threshold.atLeast < previous,
-        'examples/custom-reflex-draft.json: score thresholds must be strictly descending',
+        `${label}: score thresholds must be strictly descending`,
       )
       previous = threshold.atLeast
       branches.add(threshold.branch)
@@ -181,16 +191,16 @@ function validateCustomDraftCoherence(draft) {
   for (const fixture of draft.fixtures) {
     assert(
       !fixtureIds.has(fixture.id),
-      `examples/custom-reflex-draft.json: duplicate fixture id ${fixture.id}`,
+      `${label}: duplicate fixture id ${fixture.id}`,
     )
     fixtureIds.add(fixture.id)
     assert(
       branches.has(fixture.expectedBranch),
-      `examples/custom-reflex-draft.json#${fixture.id}: expected branch is not reachable by policy`,
+      `${label}#${fixture.id}: expected branch is not reachable by policy`,
     )
     assert(
       Buffer.byteLength(JSON.stringify(fixture.state), 'utf8') <= draft.max_state_bytes,
-      `examples/custom-reflex-draft.json#${fixture.id}: fixture state exceeds max_state_bytes`,
+      `${label}#${fixture.id}: fixture state exceeds max_state_bytes`,
     )
   }
 }
@@ -203,6 +213,20 @@ function assertSchema(validate, value, label) {
 
 async function files(dir, suffix) {
   return (await readdir(dir)).filter((file) => file.endsWith(suffix)).sort()
+}
+
+async function nestedFiles(dir, fileName) {
+  const result = []
+  for (const name of (await readdir(dir)).sort()) {
+    const child = join(dir, name)
+    const info = await lstat(child)
+    assert(info.isDirectory() && !info.isSymbolicLink(), `${name}: expected a real example directory`)
+    const candidate = join(child, fileName)
+    const candidateInfo = await lstat(candidate)
+    assert(candidateInfo.isFile() && !candidateInfo.isSymbolicLink(), `${name}/${fileName}: expected a regular file`)
+    result.push(candidate)
+  }
+  return result
 }
 
 async function versionedFiles(dir, suffix) {

@@ -1,0 +1,56 @@
+{
+  "id": "research-claim-verification",
+  "version": "1",
+  "name": "Research claim verification gate",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "research-claim-verification-questions@1",
+  "questions": {
+    "support": {
+      "type": "choice",
+      "instructions": "Given only the supplied claim and short source summaries, classify whether the evidence is sufficiently supportive, materially contradictory, or still unclear.",
+      "criteria": {
+        "supported": "Multiple supplied source summaries directly support the claim without a material contradiction.",
+        "contradicted": "A supplied authoritative source materially conflicts with the claim.",
+        "unclear": "Evidence is incomplete, indirect, mixed, or insufficient."
+      }
+    }
+  },
+  "policy_version": "research-claim-verification-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "support",
+    "branches": {
+      "supported": "continue",
+      "contradicted": "stop",
+      "unclear": "verify"
+    },
+    "minimumSelectedProbability": 0.8,
+    "uncertainBranch": "verify"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-supported",
+      "evidenceClass": "synthetic",
+      "state": {
+        "claim": "Example City opened the synthetic bridge in 2025.",
+        "sources": [
+          "City press release: bridge opened on 4 June 2025.",
+          "Transport authority report: operations began in June 2025."
+        ]
+      },
+      "expectedBranch": "continue"
+    },
+    {
+      "id": "synthetic-unclear",
+      "evidenceClass": "synthetic",
+      "state": {
+        "claim": "Example City opened the synthetic bridge in 2025.",
+        "sources": [
+          "Travel blog: the bridge looked nearly finished in late 2024."
+        ]
+      },
+      "expectedBranch": "verify"
+    }
+  ]
+}

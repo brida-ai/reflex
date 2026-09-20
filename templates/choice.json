@@ -1,0 +1,47 @@
+{
+  "id": "replace-choice-id",
+  "version": "1",
+  "name": "Replace choice name",
+  "max_state_bytes": 8192,
+  "data_class": "non_sensitive",
+  "question_set_version": "replace-choice-questions@1",
+  "questions": {
+    "decision": {
+      "type": "choice",
+      "instructions": "Choose exactly one bounded category from the supplied state.",
+      "criteria": {
+        "first": "Describe the first category.",
+        "second": "Describe the second category."
+      }
+    }
+  },
+  "policy_version": "replace-choice-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "decision",
+    "branches": {
+      "first": "first_branch",
+      "second": "second_branch"
+    },
+    "minimumSelectedProbability": 0.8,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-first",
+      "evidenceClass": "synthetic",
+      "state": {
+        "example": "Replace with synthetic state for the first category"
+      },
+      "expectedBranch": "first_branch"
+    },
+    {
+      "id": "synthetic-second",
+      "evidenceClass": "synthetic",
+      "state": {
+        "example": "Replace with synthetic state for the second category"
+      },
+      "expectedBranch": "second_branch"
+    }
+  ]
+}

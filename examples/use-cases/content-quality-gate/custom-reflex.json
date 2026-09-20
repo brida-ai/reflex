@@ -1,0 +1,59 @@
+{
+  "id": "content-quality-gate",
+  "version": "1",
+  "name": "Content quality gate",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "content-quality-gate-questions@1",
+  "questions": {
+    "quality": {
+      "type": "score",
+      "instructions": "Score the supplied draft against the explicit audience, required facts and acceptance criteria. Judge fitness for the stated purpose, not writing style preference.",
+      "criteria": [
+        "1: materially wrong or missing the required purpose",
+        "2: major omissions or contradictions",
+        "3: usable but needs meaningful revision",
+        "4: meets the stated acceptance criteria",
+        "5: clearly meets the criteria with no material issue"
+      ]
+    }
+  },
+  "policy_version": "content-quality-gate-policy@1",
+  "declarative_policy": {
+    "type": "score",
+    "questionId": "quality",
+    "thresholds": [
+      {
+        "atLeast": 4,
+        "branch": "publish_candidate"
+      },
+      {
+        "atLeast": 3,
+        "branch": "revise"
+      }
+    ],
+    "belowBranch": "reject"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-good",
+      "evidenceClass": "synthetic",
+      "state": {
+        "audience": "New users",
+        "requiredFacts": ["Free Preview", "No card required", "Recommendation only"],
+        "draft": "Try the Free Preview with no card required. Reflex returns a recommendation; your application keeps authority over actions."
+      },
+      "expectedBranch": "publish_candidate"
+    },
+    {
+      "id": "synthetic-missing",
+      "evidenceClass": "synthetic",
+      "state": {
+        "audience": "New users",
+        "requiredFacts": ["Free Preview", "No card required", "Recommendation only"],
+        "draft": "Use Reflex to automate everything."
+      },
+      "expectedBranch": "reject"
+    }
+  ]
+}

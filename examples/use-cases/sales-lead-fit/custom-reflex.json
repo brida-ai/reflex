@@ -1,0 +1,52 @@
+{
+  "id": "sales-lead-fit",
+  "version": "1",
+  "name": "Sales lead fit",
+  "max_state_bytes": 8192,
+  "data_class": "non_sensitive",
+  "question_set_version": "sales-lead-fit-questions@1",
+  "questions": {
+    "qualified": {
+      "type": "binary",
+      "instructions": "Does this lead match the explicitly supplied ideal-customer profile closely enough to justify a sales follow-up?",
+      "criteria": {
+        "true": "The supplied firmographic and use-case facts materially match the stated ICP.",
+        "false": "The supplied facts materially conflict with the ICP or show no credible use case."
+      }
+    }
+  },
+  "policy_version": "sales-lead-fit-policy@1",
+  "declarative_policy": {
+    "type": "binary",
+    "questionId": "qualified",
+    "trueBranch": "qualified",
+    "falseBranch": "ignore",
+    "uncertainBranch": "review",
+    "trueWhenProbabilityAtLeast": 0.82,
+    "falseWhenProbabilityAtMost": 0.18
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-fit",
+      "evidenceClass": "synthetic",
+      "state": {
+        "icp": "B2B software company with 20-200 employees and repetitive support triage",
+        "company": "Synthetic Support Cloud",
+        "employeeCount": 65,
+        "useCase": "Route incoming support tickets before waking a frontier agent"
+      },
+      "expectedBranch": "qualified"
+    },
+    {
+      "id": "synthetic-mismatch",
+      "evidenceClass": "synthetic",
+      "state": {
+        "icp": "B2B software company with 20-200 employees and repetitive support triage",
+        "company": "Weekend Photo Club",
+        "employeeCount": 2,
+        "useCase": "Generate artistic captions"
+      },
+      "expectedBranch": "ignore"
+    }
+  ]
+}

@@ -1,13 +1,36 @@
-# Recipe examples
+# Reflex examples
 
-`minimal-reflex.yaml` shows the public `v1alpha1` recipe shape without implying hosted availability.
+This directory contains public, synthetic examples for Brida Reflex.
 
-A new recipe proposal should include:
+- `minimal-reflex.yaml` — smallest public official-recipe shape.
+- `custom-reflex-draft.json` — minimal Organization-private Custom Reflex draft.
+- `use-cases/` — realistic, copyable Custom Reflex examples for common workflows.
 
-1. a declarative YAML recipe;
-2. synthetic/public fixtures;
-3. clear bounded branches;
-4. an immutable policy reference;
-5. `authority: recommendation_only`.
+## Real-world use cases
 
-Community proposals never auto-activate hosted behavior.
+The initial catalog includes:
+
+- browser/computer-use action risk;
+- content quality gates;
+- customer-support triage;
+- invoice/document review;
+- marketplace job fit;
+- research claim verification;
+- sales lead fit;
+- work prioritization.
+
+Each use case contains a `custom-reflex.json` plus a short README explaining the decision boundary and what the Reflex does **not** authorize.
+
+All fixtures are synthetic. Developer Preview examples use `non_sensitive` state only.
+
+## Contribution shape
+
+A new example should include:
+
+1. one bounded semantic decision;
+2. explicit branches and uncertainty behavior;
+3. synthetic or redacted fixtures;
+4. a clear explanation of side-effect authority staying outside Reflex;
+5. no secrets, customer data, provider credentials, or unsupported benchmark claims.
+
+Community examples never auto-activate hosted behavior.
