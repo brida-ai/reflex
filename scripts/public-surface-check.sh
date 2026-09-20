@@ -2,10 +2,16 @@
 set -euo pipefail
 
 bad=0
+tmpdir="$(mktemp -d)"
+trap 'rm -rf "$tmpdir"' EXIT
+inventory="$tmpdir/files.z"
+
+# Public validation must fail closed if Git cannot enumerate the committed tree.
+git ls-files --cached -z >"$inventory"
 files=()
 while IFS= read -r -d '' path; do
   files+=("$path")
-done < <(git ls-files --cached -z)
+done <"$inventory"
 
 for path in "${files[@]}"; do
   if [[ -L "$path" ]]; then
@@ -31,9 +37,9 @@ patterns=(
 for pattern in "${patterns[@]}"; do
   for path in "${files[@]}"; do
     [[ -f "$path" && ! -L "$path" ]] || continue
-    if grep -I -nE "$pattern" -- "$path" >/tmp/brida-public-match 2>/dev/null; then
+    if grep -I -nE "$pattern" -- "$path" >"$tmpdir/public-surface-match" 2>/dev/null; then
       echo "possible secret pattern in $path: $pattern"
-      cat /tmp/brida-public-match
+      cat "$tmpdir/public-surface-match"
       bad=1
     fi
   done
@@ -47,12 +53,11 @@ for path in "${files[@]}"; do
       continue
       ;;
   esac
-  if grep -I -nE "$context_pattern" -- "$path" >/tmp/brida-public-context 2>/dev/null; then
+  if grep -I -nE "$context_pattern" -- "$path" >"$tmpdir/public-surface-context" 2>/dev/null; then
     echo "possible private-context leak in $path:"
-    cat /tmp/brida-public-context
+    cat "$tmpdir/public-surface-context"
     bad=1
   fi
 done
 
-rm -f /tmp/brida-public-match /tmp/brida-public-context
 exit "$bad"
