@@ -13,13 +13,16 @@ Reflex is a programmable semantic decision capability for making small, typed de
 - `schema/custom-reflex-draft.schema.json` — portable Organization-private Custom Reflex draft contract.
 - `recipes/<id>/<version>.yaml` — immutable official declarative recipe versions.
 - `fixtures/<id>/<version>.json` — synthetic examples and policy fixtures aligned to one immutable recipe version.
-- `examples/` — official recipe, Custom Reflex authoring examples, and real-world synthetic use cases.\n- `templates/` — copyable Binary / Choice / Score Custom Reflex starters.
+- `examples/` — official recipe, Custom Reflex authoring examples, and real-world synthetic use cases.
+- `templates/` — copyable Binary / Choice / Score Custom Reflex starters.
 
 ## What is not here
 
 This repository does not contain hosted control-plane code, tenant authorization, metering, provider credentials/routing, customer data, private evaluation corpora, or automatic production activation.
 
 A repository merge does not make a recipe executable in the hosted Brida API. Query the Brida API/SDK for current hosted availability.
+
+The open-source TypeScript SDK lives at [`brida-ai/sdk`](https://github.com/brida-ai/sdk). The registry and SDK are Apache-2.0; the hosted Brida Reflex service remains a separately operated product.
 
 ## Validate the registry
 
