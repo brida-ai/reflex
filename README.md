@@ -15,6 +15,7 @@ Reflex is a programmable semantic decision capability for making small, typed de
 - `fixtures/<id>/<version>.json` — synthetic examples and policy fixtures aligned to one immutable recipe version.
 - `examples/` — official recipe, Custom Reflex authoring examples, and real-world synthetic use cases.
 - `templates/` — copyable Binary / Choice / Score Custom Reflex starters.
+- `patterns/` — provider-neutral integration patterns showing what belongs before, inside and after a Reflex decision.
 
 ## What is not here
 
