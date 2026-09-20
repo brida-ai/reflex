@@ -28,5 +28,6 @@ Keep every protected side effect outside Reflex: tool calls, browser actions, me
 - [Deterministic before Reflex](deterministic-before-reflex.md)
 - [Authority after Reflex](authority-after-reflex.md)
 - [Compose Reflex with tools and models](compose-with-tools-and-models.md)
+- [Calibrate policy thresholds per engine and model version](engine-calibration.md)
 
 The public Developer Preview examples use `non_sensitive` synthetic state. A pattern does not expand the data class or authority of a recipe or Custom Reflex.
