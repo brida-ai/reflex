@@ -1,0 +1,110 @@
+{
+  "id": "code-change-classification",
+  "version": "1",
+  "name": "Code change classification",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "code-change-classification-questions@1",
+  "questions": {
+    "changeClass": {
+      "type": "choice",
+      "instructions": "Classify the primary semantic type of the supplied bounded software change. Use only the supplied summary, component/path classes and deterministic signals; do not infer an unstated vulnerability or release impact.",
+      "criteria": {
+        "bug_fix": "The change primarily repairs behavior that was already expected to work.",
+        "feature": "The change primarily adds a new capability or materially expands supported product behavior.",
+        "maintenance": "The change primarily concerns documentation, refactoring, dependency/tooling work, cleanup, tests, or internal maintenance without adding a new product behavior.",
+        "security_sensitive": "The change materially affects authentication, authorization, permissions, cryptographic handling, secret handling, trust boundaries, or another explicitly supplied protected security behavior.",
+        "mixed_or_unclear": "The change mixes multiple primary categories or the supplied evidence is insufficient to choose reliably."
+      }
+    }
+  },
+  "policy_version": "code-change-classification-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "changeClass",
+    "branches": {
+      "bug_fix": "bugfix_candidate",
+      "feature": "feature_candidate",
+      "maintenance": "maintenance_candidate",
+      "security_sensitive": "security_review",
+      "mixed_or_unclear": "review"
+    },
+    "minimumSelectedProbability": 0.8,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-parser-null-fix",
+      "evidenceClass": "synthetic",
+      "state": {
+        "changeSummary": "Adds a guard for an empty optional parser node that previously caused a documented valid input to throw.",
+        "commitIntent": "Fix parser crash for valid empty optional section",
+        "changedPathClasses": [
+          "parser_implementation",
+          "parser_test"
+        ],
+        "deterministicSignals": {
+          "protectedSecurityPath": false,
+          "secretsDetected": false,
+          "testsPass": true
+        }
+      },
+      "expectedBranch": "bugfix_candidate"
+    },
+    {
+      "id": "synthetic-new-export-format",
+      "evidenceClass": "synthetic",
+      "state": {
+        "changeSummary": "Adds a new JSON export option alongside the existing CSV export and documents the new supported format.",
+        "commitIntent": "Add JSON project export",
+        "changedPathClasses": [
+          "export_api",
+          "user_documentation",
+          "tests"
+        ],
+        "deterministicSignals": {
+          "protectedSecurityPath": false,
+          "secretsDetected": false,
+          "testsPass": true
+        }
+      },
+      "expectedBranch": "feature_candidate"
+    },
+    {
+      "id": "synthetic-auth-scope-change",
+      "evidenceClass": "synthetic",
+      "state": {
+        "changeSummary": "Changes how privileged session scopes are checked before an administrator can rotate another user's credentials.",
+        "commitIntent": "Refine privileged session scope validation",
+        "changedPathClasses": [
+          "authorization",
+          "session_security",
+          "tests"
+        ],
+        "deterministicSignals": {
+          "protectedSecurityPath": true,
+          "secretsDetected": false,
+          "testsPass": true
+        }
+      },
+      "expectedBranch": "security_review"
+    },
+    {
+      "id": "synthetic-doc-cleanup",
+      "evidenceClass": "synthetic",
+      "state": {
+        "changeSummary": "Reorganizes installation documentation and removes duplicate examples. No runtime code or configuration changes.",
+        "commitIntent": "Clean up installation docs",
+        "changedPathClasses": [
+          "documentation"
+        ],
+        "deterministicSignals": {
+          "protectedSecurityPath": false,
+          "secretsDetected": false,
+          "testsPass": "not_applicable"
+        }
+      },
+      "expectedBranch": "maintenance_candidate"
+    }
+  ]
+}
