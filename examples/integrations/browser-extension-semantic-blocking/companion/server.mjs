@@ -7,8 +7,15 @@ const REFLEX_ID = 'semantic-content-blocking'
 const MAX_BODY_BYTES = 16_384
 const ALLOWED_BRANCHES = new Set(['keep_candidate', 'hide_candidate', 'review'])
 
-export function isAllowedExtensionOrigin(origin) {
-  return typeof origin === 'string' && /^chrome-extension:\/\/[a-p]{32}$/u.test(origin)
+export function validateExtensionOrigin(origin) {
+  if (typeof origin !== 'string' || !/^chrome-extension:\/\/[a-p]{32}$/u.test(origin)) {
+    throw new TypeError('BRIDA_EXTENSION_ORIGIN must be one exact Chrome extension origin')
+  }
+  return origin
+}
+
+export function isAllowedExtensionOrigin(origin, allowedOrigin) {
+  return typeof origin === 'string' && origin === allowedOrigin
 }
 
 export function validateCandidateState(state) {
@@ -85,12 +92,14 @@ export function createServer({
   apiKey,
   apiBaseUrl = DEFAULT_API_BASE_URL,
   fetchImpl = globalThis.fetch,
+  extensionOrigin,
 } = {}) {
   if (typeof apiKey !== 'string' || apiKey.trim() === '') throw new TypeError('BRIDA_API_KEY is required')
+  const allowedExtensionOrigin = validateExtensionOrigin(extensionOrigin)
 
   return http.createServer(async (request, response) => {
     const origin = request.headers.origin
-    if (!isAllowedExtensionOrigin(origin)) {
+    if (!isAllowedExtensionOrigin(origin, allowedExtensionOrigin)) {
       writeJson(response, 403, { error: 'extension_origin_required' })
       return
     }
@@ -137,6 +146,7 @@ export function startFromEnvironment() {
   const server = createServer({
     apiKey: process.env.BRIDA_API_KEY,
     apiBaseUrl: process.env.BRIDA_API_BASE_URL || DEFAULT_API_BASE_URL,
+    extensionOrigin: process.env.BRIDA_EXTENSION_ORIGIN,
   })
   const port = Number(process.env.PORT || DEFAULT_PORT)
   server.listen(port, '127.0.0.1', () => {

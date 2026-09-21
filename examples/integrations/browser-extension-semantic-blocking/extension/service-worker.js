@@ -1,5 +1,17 @@
 const COMPANION_URL = 'http://127.0.0.1:8787/classify'
 
+chrome.action.onClicked.addListener(async (tab) => {
+  if (!tab.id) return
+  try {
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: ['content.js'],
+    })
+  } catch {
+    // Restricted browser pages and pages without activeTab access fail closed.
+  }
+})
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message?.type !== 'reflex_semantic_content_candidate') return false
   if (!sender.tab?.id) {
