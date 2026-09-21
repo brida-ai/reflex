@@ -290,6 +290,6 @@ function relative(path, root) {
 }
 
 if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  const result = await validateRegistry(process.argv[2] ?? DEFAULT_ROOT)
+  const result = await validateRegistry()
   console.log(`registry validation: ${result.recipeVersions} recipe versions / ${result.fixtureSets} fixture sets / ${result.examples} recipe examples / ${result.customDraftExamples} custom draft examples / ok`)
 }

@@ -7,11 +7,6 @@ function git(...args) {
   return execFileSync('git', args, { encoding: 'utf8' }).trim()
 }
 
-const impact = process.argv[2]
-if (impact === undefined) {
-  console.error('usage: node scripts/release/plan.mjs patch|minor|major')
-  process.exit(2)
-}
-
+const impact = process.argv[2] ?? ''
 const tags = git('tag', '--list').split('\n').filter(Boolean)
 process.stdout.write(`${JSON.stringify(nextRelease(tags, impact))}\n`)
