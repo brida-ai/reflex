@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Meeting utterance triage"
+  short_description: "Implement the meeting-utterance-triage Reflex use case"

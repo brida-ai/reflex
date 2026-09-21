@@ -23,6 +23,7 @@ const aliases = {
   'game-state-action': ['gameplay decision', 'game state', 'simulation action'],
   'incoming-message-risk': ['phishing', 'spam risk', 'inbound message risk'],
   'memory-relevance-gate': ['memory relevance', 'remember this', 'memory gate'],
+  'meeting-utterance-triage': ['meeting action items', 'meeting minutes', 'live meeting notes', 'action item detection', 'meeting triage'],
   'model-effort-routing': ['model routing', 'effort routing', 'model tier'],
   'outbound-message-risk': ['send guard', 'outbound message review', 'message risk'],
   'page-clutter-relevance': ['unclutter', 'page clutter', 'reading cleanup'],

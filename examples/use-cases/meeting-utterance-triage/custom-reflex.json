@@ -1,0 +1,175 @@
+{
+  "id": "meeting-utterance-triage",
+  "version": "1",
+  "name": "Meeting utterance triage",
+  "max_state_bytes": 12288,
+  "data_class": "non_sensitive",
+  "question_set_version": "meeting-utterance-triage-questions@1",
+  "questions": {
+    "utteranceKind": {
+      "type": "choice",
+      "instructions": "Classify the semantic role of this already-segmented meeting utterance. Judge only the supplied utterance in its bounded recent context; do not invent owners, deadlines, decisions or actions that were not stated. Use the criteria tie-breaks: concrete project follow-up work beats a risk explanation; an explicit settled choice beats its rationale; a request to perform project work is an action item rather than an open question; a question seeking information, confirmation, or who knows something remains an open question; meeting facilitation such as greetings, breaks, agenda movement or ending the call is no-note; a bare acknowledgement or agreement without one uniquely identifiable proposition is ambiguous. A follow-up that is explicitly conditional on an unresolved future decision is not yet an action item; route that ambiguous conditional commitment to review.",
+      "criteria": {
+        "action_item": "The utterance creates, accepts, requests or assigns concrete project follow-up work that is a current obligation somebody is expected to do after or outside ordinary meeting facilitation. If it also mentions why the work matters or a risk it addresses, keep action_item as the primary class. Do not classify hypothetical work that only applies if an unresolved future choice is made as an action item.",
+        "decision": "The utterance states a settled choice, explicit agreement or confirmed course of action with a uniquely identifiable proposition. Do not treat a generic acknowledgement such as okay, sounds good or that works as a decision when recent context leaves multiple possible referents.",
+        "open_question": "The utterance raises or preserves a substantive unresolved information question whose answer matters to the meeting work. This includes asking who knows or can confirm a fact. A direct request for somebody to perform concrete project work is action_item instead.",
+        "risk": "The utterance identifies a blocker, dependency, uncertainty or consequence that materially threatens the planned work or outcome, when it is not primarily creating follow-up work, recording a settled decision or asking an unresolved question.",
+        "status_update": "The utterance primarily reports current progress or state without itself creating follow-up work, settling a decision, asking an unresolved question or surfacing a material risk.",
+        "chit_chat": "The utterance is social or procedural meeting facilitation rather than substantive project content. This includes greetings, thanks, taking a break, moving to the next agenda item, or ending the meeting when no project follow-up is created.",
+        "ambiguous": "The supplied words/context do not support one substantive category reliably. This includes tentative statements, compound utterances with competing primary categories, bare agreement or acknowledgement when the prior context does not identify one unique proposition, and conditional future work that depends on an unresolved decision."
+      }
+    }
+  },
+  "policy_version": "meeting-utterance-triage-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "utteranceKind",
+    "branches": {
+      "action_item": "action_item_candidate",
+      "decision": "decision_candidate",
+      "open_question": "question_candidate",
+      "risk": "risk_candidate",
+      "status_update": "no_note",
+      "chit_chat": "no_note",
+      "ambiguous": "review"
+    },
+    "minimumSelectedProbability": 0.78,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-action-item",
+      "evidenceClass": "synthetic",
+      "state": {
+        "meetingTopic": "staging rollout",
+        "speakerRole": "engineer",
+        "utterance": "I will send the revised rollout checklist to the team before tomorrow's staging window.",
+        "recentContext": [
+          "The checklist still needs the rollback section."
+        ],
+        "deterministicSignals": {
+          "sentenceComplete": true,
+          "duplicate": false,
+          "meetingInScope": true
+        }
+      },
+      "expectedBranch": "action_item_candidate"
+    },
+    {
+      "id": "synthetic-decision",
+      "evidenceClass": "synthetic",
+      "state": {
+        "meetingTopic": "release planning",
+        "speakerRole": "facilitator",
+        "utterance": "We agreed to keep the October release date and remove the optional import step from this milestone.",
+        "recentContext": [
+          "The team compared delaying the release with reducing scope."
+        ],
+        "deterministicSignals": {
+          "sentenceComplete": true,
+          "duplicate": false,
+          "meetingInScope": true
+        }
+      },
+      "expectedBranch": "decision_candidate"
+    },
+    {
+      "id": "synthetic-open-question",
+      "evidenceClass": "synthetic",
+      "state": {
+        "meetingTopic": "data residency",
+        "speakerRole": "product",
+        "utterance": "Do we know whether the vendor can keep the new dataset entirely in the approved region?",
+        "recentContext": [],
+        "deterministicSignals": {
+          "sentenceComplete": true,
+          "duplicate": false,
+          "meetingInScope": true
+        }
+      },
+      "expectedBranch": "question_candidate"
+    },
+    {
+      "id": "synthetic-risk",
+      "evidenceClass": "synthetic",
+      "state": {
+        "meetingTopic": "migration",
+        "speakerRole": "engineering",
+        "utterance": "The migration is blocked on external approval, and a delay there would put the launch window at risk.",
+        "recentContext": [],
+        "deterministicSignals": {
+          "sentenceComplete": true,
+          "duplicate": false,
+          "meetingInScope": true
+        }
+      },
+      "expectedBranch": "risk_candidate"
+    },
+    {
+      "id": "synthetic-status",
+      "evidenceClass": "synthetic",
+      "state": {
+        "meetingTopic": "weekly delivery",
+        "speakerRole": "engineering",
+        "utterance": "The API migration is about eighty percent complete and there are no current blockers.",
+        "recentContext": [],
+        "deterministicSignals": {
+          "sentenceComplete": true,
+          "duplicate": false,
+          "meetingInScope": true
+        }
+      },
+      "expectedBranch": "no_note"
+    },
+    {
+      "id": "synthetic-chit-chat",
+      "evidenceClass": "synthetic",
+      "state": {
+        "meetingTopic": "weekly delivery",
+        "speakerRole": "participant",
+        "utterance": "Thanks everyone, have a good weekend.",
+        "recentContext": [],
+        "deterministicSignals": {
+          "sentenceComplete": true,
+          "duplicate": false,
+          "meetingInScope": true
+        }
+      },
+      "expectedBranch": "no_note"
+    },
+    {
+      "id": "synthetic-ambiguous",
+      "evidenceClass": "synthetic",
+      "state": {
+        "meetingTopic": "onboarding",
+        "speakerRole": "product",
+        "utterance": "Maybe we should revisit onboarding soon.",
+        "recentContext": [],
+        "deterministicSignals": {
+          "sentenceComplete": true,
+          "duplicate": false,
+          "meetingInScope": true
+        }
+      },
+      "expectedBranch": "review"
+    },
+    {
+      "id": "synthetic-conditional-follow-up",
+      "evidenceClass": "synthetic",
+      "state": {
+        "meetingTopic": "pilot scope",
+        "speakerRole": "product",
+        "utterance": "If we decide to expand the pilot, I can prepare the extra onboarding note.",
+        "recentContext": [
+          "The team has not decided whether to expand the pilot."
+        ],
+        "deterministicSignals": {
+          "sentenceComplete": true,
+          "duplicate": false,
+          "meetingInScope": true
+        }
+      },
+      "expectedBranch": "review"
+    }
+  ]
+}
