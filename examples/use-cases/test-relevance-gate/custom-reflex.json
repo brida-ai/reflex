@@ -1,0 +1,89 @@
+{
+  "id": "test-relevance-gate",
+  "version": "1",
+  "name": "Test relevance gate",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "test-relevance-gate-questions@1",
+  "questions": {
+    "relevance": {
+      "type": "choice",
+      "instructions": "Classify only whether the supplied optional test candidate is semantically relevant to behavior plausibly affected by the supplied software change, after deterministic required-suite and dependency rules have already run.",
+      "criteria": {
+        "relevant": "The test plausibly exercises behavior, an interface, or a user-visible path that the supplied change could materially affect.",
+        "unrelated": "The supplied change and test purpose are materially disjoint, with no meaningful affected behavior indicated by the supplied evidence.",
+        "ambiguous": "The relationship is mixed, indirect, underspecified, or cannot be established reliably from the supplied state."
+      }
+    }
+  },
+  "policy_version": "test-relevance-gate-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "relevance",
+    "branches": {
+      "relevant": "run_candidate",
+      "unrelated": "low_priority_candidate",
+      "ambiguous": "review"
+    },
+    "minimumSelectedProbability": 0.8,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-export-e2e",
+      "evidenceClass": "synthetic",
+      "state": {
+        "changeSummary": "Adds a JSON export option beside the existing CSV export and changes the export-format selector.",
+        "changedComponentClasses": [
+          "export_api",
+          "export_ui"
+        ],
+        "testName": "project export formats e2e",
+        "testPurpose": "Creates a project, selects each supported export format, downloads the result and verifies the chosen format is produced.",
+        "deterministicSignals": {
+          "requiredByPolicy": false,
+          "directStaticDependency": false,
+          "changedTestFile": false
+        }
+      },
+      "expectedBranch": "run_candidate"
+    },
+    {
+      "id": "synthetic-avatar-unrelated",
+      "evidenceClass": "synthetic",
+      "state": {
+        "changeSummary": "Adds a JSON export option beside the existing CSV export and changes the export-format selector.",
+        "changedComponentClasses": [
+          "export_api",
+          "export_ui"
+        ],
+        "testName": "profile avatar cropping e2e",
+        "testPurpose": "Uploads a profile image, adjusts the crop region and verifies the saved avatar preview.",
+        "deterministicSignals": {
+          "requiredByPolicy": false,
+          "directStaticDependency": false,
+          "changedTestFile": false
+        }
+      },
+      "expectedBranch": "low_priority_candidate"
+    },
+    {
+      "id": "synthetic-insufficient-shared-helper",
+      "evidenceClass": "synthetic",
+      "state": {
+        "changeSummary": "Refactors an internal shared helper while preserving its documented interface. The supplied summary does not identify which product flows use it.",
+        "changedComponentClasses": [
+          "shared_helper"
+        ],
+        "testName": "workspace settings navigation e2e",
+        "testPurpose": "Navigates between workspace settings pages and verifies the selected section remains visible.",
+        "deterministicSignals": {
+          "requiredByPolicy": false,
+          "directStaticDependency": false,
+          "changedTestFile": false
+        }
+      },
+      "expectedBranch": "review"
+    }
+  ]
+}
