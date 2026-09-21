@@ -73,6 +73,7 @@
         "brida-reflex-customer-support-ticket-triage",
         "brida-reflex-sales-lead-fit",
         "brida-reflex-marketplace-job-fit",
+        "brida-reflex-meeting-utterance-triage",
         "brida-reflex-document-extraction-route",
         "brida-reflex-document-invoice-review",
         "brida-reflex-incident-signal-triage"
