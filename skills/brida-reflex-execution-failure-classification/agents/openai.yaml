@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Execution failure classification"
+  short_description: "Implement the execution-failure-classification Reflex use case"

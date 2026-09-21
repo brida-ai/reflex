@@ -1,0 +1,112 @@
+{
+  "id": "outbound-message-risk",
+  "version": "1",
+  "name": "Outbound message risk",
+  "max_state_bytes": 12288,
+  "data_class": "non_sensitive",
+  "question_set_version": "outbound-message-risk-questions@1",
+  "questions": {
+    "sendRisk": {
+      "type": "choice",
+      "instructions": "Classify the semantic risk of sending the supplied bounded draft to the stated audience after deterministic DLP, recipient and authorization checks have already run. Judge only the supplied non-sensitive context.",
+      "criteria": {
+        "ordinary": "The draft is materially appropriate for the stated audience and does not make a consequential unsupported commitment or disclose confidential context in the supplied evidence.",
+        "caution": "The draft is ambiguous, incomplete, unusually hostile, makes a consequential commitment, or otherwise deserves human review before sending.",
+        "protected": "The draft materially discloses confidential/internal context to an inappropriate audience, contains a clearly protected semantic disclosure, or presents another supplied audience-specific risk that host policy should block pending review."
+      }
+    },
+    "bindingCommitment": {
+      "type": "binary",
+      "instructions": "Does the draft make a consequential firm commitment such as a guaranteed delivery date, refund, price, discount, contractual promise or other commitment that should be reviewed before sending?",
+      "criteria": {
+        "true": "The wording commits the sender or organization to a consequential outcome or term.",
+        "false": "The wording is informational, tentative, already-authorized in the supplied context, or does not create a consequential commitment."
+      }
+    },
+    "audienceFit": {
+      "type": "binary",
+      "instructions": "Based only on the supplied audience class and context, is the draft materially appropriate to share with that audience?",
+      "criteria": {
+        "true": "The content is appropriate for the stated audience and no supplied confidential/audience mismatch is evident.",
+        "false": "The content materially exposes internal/confidential context or is otherwise inappropriate for the stated audience."
+      }
+    },
+    "tone": {
+      "type": "score",
+      "instructions": "Score the interpersonal tone of the draft toward its recipient.",
+      "criteria": [
+        "Warm or neutral and professional",
+        "Direct but still professional",
+        "Curt or confrontational enough to deserve review",
+        "Hostile, insulting or clearly inappropriate"
+      ]
+    }
+  },
+  "policy_version": "outbound-message-risk-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "sendRisk",
+    "branches": {
+      "ordinary": "send_candidate",
+      "caution": "review",
+      "protected": "block_candidate"
+    },
+    "minimumSelectedProbability": 0.78,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-routine-internal-update",
+      "evidenceClass": "synthetic",
+      "state": {
+        "draft": "The staging migration finished successfully. I will post the test summary in the project channel after the final check.",
+        "audienceClass": "internal_project_team",
+        "relationshipClass": "coworkers",
+        "messageMode": "new_message",
+        "deterministicSignals": {
+          "exactSecretDetected": false,
+          "exactPersonalDataDetected": false,
+          "blockedDestination": false,
+          "recipientAuthorized": true
+        }
+      },
+      "expectedBranch": "send_candidate"
+    },
+    {
+      "id": "synthetic-unapproved-delivery-promise",
+      "evidenceClass": "synthetic",
+      "state": {
+        "draft": "We guarantee the requested integration will be live by Friday and the first month will be refunded if it is late.",
+        "audienceClass": "customer",
+        "relationshipClass": "external_customer",
+        "messageMode": "reply",
+        "deterministicSignals": {
+          "exactSecretDetected": false,
+          "exactPersonalDataDetected": false,
+          "blockedDestination": false,
+          "recipientAuthorized": true,
+          "commitmentPreapproved": false
+        }
+      },
+      "expectedBranch": "review"
+    },
+    {
+      "id": "synthetic-confidential-pricing-leak",
+      "evidenceClass": "synthetic",
+      "state": {
+        "draft": "For context, our unreleased internal pricing plan raises the enterprise tier next quarter and our margin target is substantially higher than the current public offer.",
+        "audienceClass": "external_partner",
+        "relationshipClass": "external_partner",
+        "messageMode": "new_message",
+        "deterministicSignals": {
+          "exactSecretDetected": false,
+          "exactPersonalDataDetected": false,
+          "blockedDestination": false,
+          "recipientAuthorized": true,
+          "informationClassification": "internal_confidential"
+        }
+      },
+      "expectedBranch": "block_candidate"
+    }
+  ]
+}

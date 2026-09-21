@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Model effort routing"
+  short_description: "Implement the model-effort-routing Reflex use case"

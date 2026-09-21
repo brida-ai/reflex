@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Semantic response health"
+  short_description: "Implement the semantic-response-health Reflex use case"

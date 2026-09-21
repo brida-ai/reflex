@@ -1,0 +1,15 @@
+{
+  "name": "brida-ai",
+  "description": "Agent skills for building and integrating Brida Reflex decisions.",
+  "owner": {
+    "name": "Brida AI",
+    "url": "https://brida.ai"
+  },
+  "plugins": [
+    {
+      "name": "reflex",
+      "description": "Implement, discover and verify Brida Reflex workflows and focused use cases",
+      "source": "./"
+    }
+  ]
+}

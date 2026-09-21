@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Agent progress gate"
+  short_description: "Implement the agent-progress-gate Reflex use case"

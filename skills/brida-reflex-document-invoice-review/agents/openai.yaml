@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Invoice review gate"
+  short_description: "Implement the document-invoice-review Reflex use case"

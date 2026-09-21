@@ -1,0 +1,83 @@
+{
+  "id": "completion-evidence-gate",
+  "version": "1",
+  "name": "Completion evidence gate",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "completion-evidence-gate-questions@1",
+  "questions": {
+    "completion": {
+      "type": "choice",
+      "instructions": "Classify whether the supplied deterministic evidence establishes completion of the stated objective. Treat the completion claim as an assertion to verify, not as evidence.",
+      "criteria": {
+        "verified_complete": "Every explicitly required deterministic check in the supplied evidence is satisfied or passed, all required outcomes are present, and no supplied blocker remains.",
+        "incomplete": "At least one explicitly required check failed, a required outcome is absent, or a supplied blocker shows work remains.",
+        "unverified": "At least one required check is missing, unknown, not run, indirect, or otherwise insufficient to establish completion."
+      }
+    }
+  },
+  "policy_version": "completion-evidence-gate-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "completion",
+    "branches": {
+      "verified_complete": "completion_candidate",
+      "incomplete": "resume_work",
+      "unverified": "review"
+    },
+    "minimumSelectedProbability": 0.72,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-verified-complete",
+      "evidenceClass": "synthetic",
+      "state": {
+        "objective": "Rename a public parser function and update its focused tests.",
+        "completionClaim": "The rename is complete and verified.",
+        "deterministicEvidence": {
+          "implementationChangePresent": true,
+          "requiredTestUpdatePresent": true,
+          "focusedTestsPassed": true,
+          "oldSymbolAbsent": true
+        },
+        "knownBlockers": []
+      },
+      "expectedBranch": "completion_candidate"
+    },
+    {
+      "id": "synthetic-unfinished-check",
+      "evidenceClass": "synthetic",
+      "state": {
+        "objective": "Rename a public parser function and update its focused tests.",
+        "completionClaim": "Done.",
+        "deterministicEvidence": {
+          "implementationChangePresent": true,
+          "requiredTestUpdatePresent": true,
+          "focusedTestsPassed": false,
+          "oldSymbolAbsent": true
+        },
+        "knownBlockers": [
+          "focused test failed"
+        ]
+      },
+      "expectedBranch": "resume_work"
+    },
+    {
+      "id": "synthetic-unverified-evidence",
+      "evidenceClass": "synthetic",
+      "state": {
+        "objective": "Rename a public parser function and update its focused tests.",
+        "completionClaim": "Everything should now be finished.",
+        "deterministicEvidence": {
+          "implementationChangePresent": true,
+          "requiredTestUpdatePresent": "unknown",
+          "focusedTestsPassed": "not_run",
+          "oldSymbolAbsent": "unknown"
+        },
+        "knownBlockers": []
+      },
+      "expectedBranch": "review"
+    }
+  ]
+}

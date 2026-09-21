@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Content quality gate"
+  short_description: "Implement the content-quality-gate Reflex use case"

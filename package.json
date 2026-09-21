@@ -12,8 +12,9 @@
   "scripts": {
     "validate": "node scripts/validate-registry.mjs",
     "check:public": "bash scripts/public-surface-check.sh",
-    "check": "pnpm validate && pnpm test && pnpm check:public",
-    "test": "node --test scripts/*.test.mjs"
+    "check": "pnpm validate && pnpm check:skills && pnpm test && pnpm check:public",
+    "test": "node --test scripts/*.test.mjs",
+    "check:skills": "node scripts/generate-use-case-skills.mjs --check"
   },
   "devDependencies": {
     "ajv": "^8.17.1",

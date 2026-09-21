@@ -1,0 +1,61 @@
+{
+  "id": "agent-progress-gate",
+  "version": "1",
+  "name": "Agent progress gate",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "agent-progress-gate-questions@1",
+  "questions": {
+    "progress": {
+      "type": "choice",
+      "instructions": "Classify whether the recent bounded work materially advanced the stated objective, using only the supplied step summaries and deterministic progress markers.",
+      "criteria": {
+        "progressing": "Recent steps produced new useful evidence, completed a required subgoal, or measurably reduced the remaining work.",
+        "stalled": "Recent steps repeat substantially the same failed approach or produce no new useful state toward the objective.",
+        "unclear": "The supplied state is too sparse or mixed to determine progress reliably."
+      }
+    }
+  },
+  "policy_version": "agent-progress-gate-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "progress",
+    "branches": {
+      "progressing": "continue_candidate",
+      "stalled": "inspect",
+      "unclear": "review"
+    },
+    "minimumSelectedProbability": 0.78,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-progress",
+      "evidenceClass": "synthetic",
+      "state": {
+        "objective": "Make the parser tests pass.",
+        "recentSteps": [
+          "Identified the failing edge case.",
+          "Added a focused regression test.",
+          "Implemented the parser fix."
+        ],
+        "deterministicProgress": "previously failing focused test now passes"
+      },
+      "expectedBranch": "continue_candidate"
+    },
+    {
+      "id": "synthetic-stall",
+      "evidenceClass": "synthetic",
+      "state": {
+        "objective": "Make the parser tests pass.",
+        "recentSteps": [
+          "Retried the same command and received the same parse error.",
+          "Retried the same command again with no input or code change.",
+          "Received the identical parse error."
+        ],
+        "deterministicProgress": "no tracked state or test result changed"
+      },
+      "expectedBranch": "inspect"
+    }
+  ]
+}

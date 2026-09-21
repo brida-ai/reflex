@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Code change classification"
+  short_description: "Implement the code-change-classification Reflex use case"

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Customer support ticket triage"
+  short_description: "Implement the customer-support-ticket-triage Reflex use case"

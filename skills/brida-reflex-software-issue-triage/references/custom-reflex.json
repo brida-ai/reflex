@@ -1,0 +1,107 @@
+{
+  "id": "software-issue-triage",
+  "version": "1",
+  "name": "Software issue triage",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "software-issue-triage-questions@1",
+  "questions": {
+    "issueKind": {
+      "type": "choice",
+      "instructions": "Classify the primary kind of software issue using only the supplied issue context.",
+      "criteria": {
+        "bug": "The issue reports behavior that appears to conflict with expected existing behavior.",
+        "feature": "The issue primarily requests a new capability or materially changed product behavior.",
+        "question": "The issue primarily asks how something works or how to accomplish a task.",
+        "maintenance": "The issue primarily concerns documentation, dependency, cleanup, refactoring, tooling, or other maintenance work.",
+        "other": "The supplied issue does not clearly fit the supported categories."
+      }
+    },
+    "urgency": {
+      "type": "score",
+      "instructions": "Score maintainer urgency from the supplied impact and time sensitivity, without inventing severity not present in state.",
+      "criteria": [
+        "No evident urgency",
+        "Low urgency",
+        "Normal maintainer attention",
+        "High urgency with material impact",
+        "Immediate human attention appears warranted"
+      ]
+    },
+    "nextStep": {
+      "type": "choice",
+      "instructions": "Choose the most appropriate next triage lane. Repository mutation and final disposition remain host-owned.",
+      "criteria": {
+        "ask_author": "Material information needed to understand, reproduce, scope, or decide the issue is missing.",
+        "investigate": "The issue contains enough concrete technical evidence for a maintainer to investigate.",
+        "product_decision": "The issue is understandable but needs a product, scope, policy, or maintainer decision before implementation.",
+        "backlog": "The issue is sufficiently clear and actionable but no supplied fact makes immediate investigation or decision necessary.",
+        "close_review": "The supplied context suggests a duplicate, already-resolved, unsupported, or otherwise potentially closeable item, but closure still requires maintainer review."
+      }
+    }
+  },
+  "policy_version": "software-issue-triage-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "nextStep",
+    "branches": {
+      "ask_author": "ask_author_candidate",
+      "investigate": "investigate_candidate",
+      "product_decision": "decision_review",
+      "backlog": "backlog_candidate",
+      "close_review": "close_review"
+    },
+    "minimumSelectedProbability": 0.78,
+    "uncertainBranch": "human_triage"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-reproducible-crash",
+      "evidenceClass": "synthetic",
+      "state": {
+        "title": "Parser crashes on an empty optional section",
+        "body": "Version 4.2.1 throws an exception when the optional notes block is present but empty. Minimal input and exact stack location are included below, and the failure reproduces on a clean install.",
+        "repositoryContext": "parser library",
+        "deterministicSignals": {
+          "templateComplete": true,
+          "exactDuplicateFound": false,
+          "protectedSecurityReport": false,
+          "reproducibleEvidencePresent": true
+        }
+      },
+      "expectedBranch": "investigate_candidate"
+    },
+    {
+      "id": "synthetic-vague-report",
+      "evidenceClass": "synthetic",
+      "state": {
+        "title": "Export does not work",
+        "body": "It stopped working for me. Please fix.",
+        "repositoryContext": "desktop application",
+        "deterministicSignals": {
+          "templateComplete": false,
+          "exactDuplicateFound": false,
+          "protectedSecurityReport": false,
+          "reproducibleEvidencePresent": false
+        }
+      },
+      "expectedBranch": "ask_author_candidate"
+    },
+    {
+      "id": "synthetic-product-request",
+      "evidenceClass": "synthetic",
+      "state": {
+        "title": "Allow workspace owners to require a custom retention period",
+        "body": "Please add an organization setting that lets owners choose a retention period between 30 and 365 days. This changes current product policy and default behavior.",
+        "repositoryContext": "hosted collaboration product",
+        "deterministicSignals": {
+          "templateComplete": true,
+          "exactDuplicateFound": false,
+          "protectedSecurityReport": false,
+          "reproducibleEvidencePresent": false
+        }
+      },
+      "expectedBranch": "decision_review"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Content policy review"
+  short_description: "Implement the content-policy-review Reflex use case"

@@ -1,0 +1,93 @@
+{
+  "id": "catalog-listing-signals",
+  "version": "1",
+  "name": "Catalog listing signals",
+  "max_state_bytes": 12288,
+  "data_class": "non_sensitive",
+  "question_set_version": "catalog-listing-signals-questions@1",
+  "questions": {
+    "listingType": {
+      "type": "choice",
+      "instructions": "Choose the primary bounded catalog type described by the supplied listing.",
+      "criteria": {
+        "physical_good": "A tangible item that is manufactured, assembled, grown or shipped to a buyer.",
+        "digital_product": "Software, subscription access to a hosted application, downloadable content or another product delivered electronically without human service delivery as the primary offer.",
+        "service_or_event": "Human-delivered work, an appointment, event access or another service where people or an event are the primary offer; hosted software access alone is a digital product.",
+        "other": "The supplied listing is too ambiguous or does not clearly fit the supported catalog types."
+      }
+    },
+    "descriptionQuality": {
+      "type": "score",
+      "instructions": "Score how clearly the listing explains what is being offered, using only the supplied listing text.",
+      "criteria": [
+        "Unusable or materially contradictory",
+        "Very incomplete",
+        "Understandable but missing important detail",
+        "Clear enough to understand the offer",
+        "Clear and specific"
+      ]
+    },
+    "needsClarification": {
+      "type": "binary",
+      "instructions": "Does the listing remain semantically ambiguous about what the customer would receive?",
+      "criteria": {
+        "true": "A reasonable reader still cannot tell what kind of product or service would be received.",
+        "false": "The supplied listing makes the offered product or service materially clear."
+      }
+    }
+  },
+  "policy_version": "catalog-listing-signals-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "listingType",
+    "branches": {
+      "physical_good": "physical_candidate",
+      "digital_product": "digital_candidate",
+      "service_or_event": "service_candidate",
+      "other": "review"
+    },
+    "minimumSelectedProbability": 0.75,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-physical-mug",
+      "evidenceClass": "synthetic",
+      "state": {
+        "title": "Handmade ceramic mug",
+        "description": "A 350 ml glazed ceramic mug, packed in a protective box and shipped to the buyer.",
+        "deterministicValidation": {
+          "requiredFieldsPresent": true,
+          "identifierValid": true
+        }
+      },
+      "expectedBranch": "physical_candidate"
+    },
+    {
+      "id": "synthetic-digital-app",
+      "evidenceClass": "synthetic",
+      "state": {
+        "title": "Hosted issue tracker",
+        "description": "Monthly access to a browser-based application for tracking software issues and project tasks. Nothing is physically shipped.",
+        "deterministicValidation": {
+          "requiredFieldsPresent": true,
+          "identifierValid": true
+        }
+      },
+      "expectedBranch": "digital_candidate"
+    },
+    {
+      "id": "synthetic-ambiguous-package",
+      "evidenceClass": "synthetic",
+      "state": {
+        "title": "Premium starter package",
+        "description": "Includes everything you need to get started. Full details are provided after purchase.",
+        "deterministicValidation": {
+          "requiredFieldsPresent": true,
+          "identifierValid": true
+        }
+      },
+      "expectedBranch": "review"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Page clutter relevance"
+  short_description: "Implement the page-clutter-relevance Reflex use case"

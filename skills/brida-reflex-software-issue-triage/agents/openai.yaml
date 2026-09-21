@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Software issue triage"
+  short_description: "Implement the software-issue-triage Reflex use case"

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Dataset example quality"
+  short_description: "Implement the dataset-example-quality Reflex use case"

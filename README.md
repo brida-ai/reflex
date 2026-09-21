@@ -72,13 +72,32 @@ Recipes are data. Arbitrary code, tool definitions, provider credentials, networ
 
 A draft is not executable merely because it validates here. Hosted activation is a separate authenticated operation and may perform additional fixture evaluation, capacity, route-admission, and release checks.
 
-## Agent Skill
+## Agent Skills
 
-The repository also ships a portable Brida Reflex Skill for AI agents at `skills/brida-reflex/`.
+The repository ships an intent-first Brida Reflex Skill plus focused skills generated from every canonical Custom Reflex use case.
 
-Use it when an agent needs to audit a project or workflow for Reflex opportunities, choose the smallest current MCP/REST/SDK integration path, or draft a bounded Custom Reflex without pretending unavailable hosted capability is live.
+Use the general skill when you want the agent to choose or design the right Reflex:
 
-The Skill treats the live Brida agent guide/manifest as the current availability source and keeps Reflex output recommendation-only.
+```bash
+npx skills add brida-ai/reflex --skill brida-reflex
+```
+
+If the use case is already known, install the focused skill directly. For example, semantic AdBlock/content blocking:
+
+```bash
+npx skills add brida-ai/reflex --skill brida-reflex-semantic-content-blocking
+```
+
+For Claude Code, the repository is also a plugin marketplace:
+
+```bash
+claude plugin marketplace add brida-ai/reflex
+claude plugin install reflex@brida-ai
+```
+
+The general skill is **intent-first**: a concrete request goes straight to implementation; discovery questions are used only when the user has not identified the decision yet. Focused skills bundle the exact public Custom Reflex contract, playbook and synthetic fixtures for that use case.
+
+Focused skills are generated from `examples/use-cases/` and checked in CI, so changing a public use-case contract without regenerating its skill fails validation. Reflex output remains recommendation-only and downstream authority stays in host code or an authorized human.
 
 ## Data class
 

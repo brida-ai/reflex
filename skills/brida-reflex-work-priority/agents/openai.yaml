@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Work priority reflex"
+  short_description: "Implement the work-priority Reflex use case"

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Duplicate report match"
+  short_description: "Implement the duplicate-report-match Reflex use case"

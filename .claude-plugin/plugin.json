@@ -1,0 +1,12 @@
+{
+  "name": "reflex",
+  "version": "0.1.0",
+  "description": "Agent skills for building and integrating Brida Reflex decisions.",
+  "author": {
+    "name": "Brida AI",
+    "url": "https://brida.ai"
+  },
+  "homepage": "https://brida.ai/reflex",
+  "repository": "https://github.com/brida-ai/reflex",
+  "license": "Apache-2.0"
+}

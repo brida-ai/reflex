@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Test relevance gate"
+  short_description: "Implement the test-relevance-gate Reflex use case"

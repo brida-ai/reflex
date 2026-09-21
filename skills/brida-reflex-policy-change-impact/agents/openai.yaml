@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Policy change impact"
+  short_description: "Implement the policy-change-impact Reflex use case"

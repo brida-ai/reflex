@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Browser action risk gate"
+  short_description: "Implement the browser-action-risk Reflex use case"

@@ -1,0 +1,59 @@
+{
+  "id": "incident-signal-triage",
+  "version": "1",
+  "name": "Incident signal triage",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "incident-signal-triage-questions@1",
+  "questions": {
+    "handling": {
+      "type": "choice",
+      "instructions": "Classify the handling depth warranted by the supplied operational signal after the listed deterministic checks.",
+      "criteria": {
+        "routine": "Signal is transient, recovered or low-impact with no supplied evidence of ongoing material user impact.",
+        "investigate": "There is a meaningful anomaly or degradation that warrants investigation but no supplied evidence of immediate broad impact.",
+        "escalate": "There is active material user impact, a critical capability is blocked, or the signal indicates a high-consequence incident needing prompt human attention."
+      }
+    }
+  },
+  "policy_version": "incident-signal-triage-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "handling",
+    "branches": {
+      "routine": "observe",
+      "investigate": "investigate",
+      "escalate": "human_attention"
+    },
+    "minimumSelectedProbability": 0.78,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-recovered-retry",
+      "evidenceClass": "synthetic",
+      "state": {
+        "capability": "background export",
+        "signal": "One worker request retried once and then succeeded.",
+        "scope": "single synthetic job",
+        "recovery": "complete",
+        "userImpact": "none observed",
+        "deterministicChecks": "SLO remains healthy"
+      },
+      "expectedBranch": "observe"
+    },
+    {
+      "id": "synthetic-active-login-impact",
+      "evidenceClass": "synthetic",
+      "state": {
+        "capability": "user login",
+        "signal": "Authentication failures rose sharply in multiple regions after a configuration change.",
+        "scope": "multiple regions",
+        "recovery": "not recovered",
+        "userImpact": "users cannot sign in",
+        "deterministicChecks": "critical user path degraded"
+      },
+      "expectedBranch": "human_attention"
+    }
+  ]
+}

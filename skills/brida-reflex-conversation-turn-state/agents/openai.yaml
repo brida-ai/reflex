@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Conversation turn state"
+  short_description: "Implement the conversation-turn-state Reflex use case"

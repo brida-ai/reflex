@@ -1,0 +1,52 @@
+{
+  "id": "marketplace-job-fit",
+  "version": "1",
+  "name": "Marketplace job fit",
+  "max_state_bytes": 12288,
+  "data_class": "non_sensitive",
+  "question_set_version": "marketplace-job-fit-questions@1",
+  "questions": {
+    "fulfillable": {
+      "type": "binary",
+      "instructions": "Can the supplied automation capability reliably fulfill this synthetic marketplace brief within the explicit scope and constraints?",
+      "criteria": {
+        "true": "The brief is specific, required inputs are available, deliverables fit the stated capability, and no unsupported or protected work is required.",
+        "false": "The brief requires missing inputs, unsupported capabilities, prohibited activity, or material ambiguity."
+      }
+    }
+  },
+  "policy_version": "marketplace-job-fit-policy@1",
+  "declarative_policy": {
+    "type": "binary",
+    "questionId": "fulfillable",
+    "trueBranch": "bid_candidate",
+    "falseBranch": "skip",
+    "uncertainBranch": "review",
+    "trueWhenProbabilityAtLeast": 0.75,
+    "falseWhenProbabilityAtMost": 0.15
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-fit",
+      "evidenceClass": "synthetic",
+      "state": {
+        "capability": "Create a 20-second launch-video draft from supplied product screenshots and approved copy.",
+        "brief": "Create one 20-second product teaser from five supplied screenshots and the approved script.",
+        "inputsAvailable": true,
+        "requiresProtectedAction": false
+      },
+      "expectedBranch": "bid_candidate"
+    },
+    {
+      "id": "synthetic-skip",
+      "evidenceClass": "synthetic",
+      "state": {
+        "capability": "Create a 20-second launch-video draft from supplied product screenshots and approved copy.",
+        "brief": "Log into our bank, buy ad inventory, and guarantee 1,000 sales.",
+        "inputsAvailable": false,
+        "requiresProtectedAction": true
+      },
+      "expectedBranch": "skip"
+    }
+  ]
+}

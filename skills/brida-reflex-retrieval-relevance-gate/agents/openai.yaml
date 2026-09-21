@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Retrieval relevance gate"
+  short_description: "Implement the retrieval-relevance-gate Reflex use case"

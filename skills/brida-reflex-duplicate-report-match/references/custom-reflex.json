@@ -1,0 +1,99 @@
+{
+  "id": "duplicate-report-match",
+  "version": "1",
+  "name": "Duplicate report match",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "duplicate-report-match-questions@1",
+  "questions": {
+    "relationship": {
+      "type": "choice",
+      "instructions": "Judge whether the two supplied reports describe the same underlying problem, distinct problems, or an ambiguous relationship. Use only the bounded evidence supplied after exact duplicate identifiers and hard conflicts have already been checked.",
+      "criteria": {
+        "same_problem": "The reports describe materially the same underlying failure or defect despite differences in wording, reporter, or reproduction details.",
+        "different_problem": "The reports describe materially different failure modes, causes, or affected behavior.",
+        "ambiguous": "The reports overlap in topic or symptoms, but the evidence is insufficient or mixed for a reliable same-problem judgment."
+      }
+    }
+  },
+  "policy_version": "duplicate-report-match-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "relationship",
+    "branches": {
+      "same_problem": "duplicate_candidate",
+      "different_problem": "distinct",
+      "ambiguous": "review"
+    },
+    "minimumSelectedProbability": 0.84,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-same-upload-stall",
+      "evidenceClass": "synthetic",
+      "state": {
+        "left": {
+          "summary": "Uploading a large attachment reaches 100% and then remains on Processing forever.",
+          "surface": "file_upload",
+          "observedBehavior": "large upload stalls after transfer completes"
+        },
+        "right": {
+          "summary": "Files around 200 MB finish sending but the UI never leaves the processing state.",
+          "surface": "file_upload",
+          "observedBehavior": "large file remains processing after bytes finish uploading"
+        },
+        "deterministicSignals": {
+          "sameExternalId": false,
+          "knownDuplicateId": false,
+          "hardConflict": false
+        }
+      },
+      "expectedBranch": "duplicate_candidate"
+    },
+    {
+      "id": "synthetic-export-distinct",
+      "evidenceClass": "synthetic",
+      "state": {
+        "left": {
+          "summary": "CSV export times out for very large projects.",
+          "surface": "data_export",
+          "observedBehavior": "large CSV export exceeds timeout"
+        },
+        "right": {
+          "summary": "JSON export returns permission denied for viewer accounts.",
+          "surface": "data_export",
+          "observedBehavior": "viewer role receives authorization error"
+        },
+        "deterministicSignals": {
+          "sameExternalId": false,
+          "knownDuplicateId": false,
+          "hardConflict": false
+        }
+      },
+      "expectedBranch": "distinct"
+    },
+    {
+      "id": "synthetic-overlapping-sync-symptoms",
+      "evidenceClass": "synthetic",
+      "state": {
+        "left": {
+          "summary": "Some records appear missing after background synchronization.",
+          "surface": "sync",
+          "observedBehavior": "records missing after sync"
+        },
+        "right": {
+          "summary": "A user reports stale data after sync but the report does not identify which records or whether they were absent or outdated.",
+          "surface": "sync",
+          "observedBehavior": "stale or incomplete data after sync"
+        },
+        "deterministicSignals": {
+          "sameExternalId": false,
+          "knownDuplicateId": false,
+          "hardConflict": false
+        }
+      },
+      "expectedBranch": "review"
+    }
+  ]
+}
