@@ -8,11 +8,11 @@
   "questions": {
     "impact": {
       "type": "choice",
-      "instructions": "Classify whether the supplied policy change materially affects the specified component responsibilities, after the listed exact scope checks.",
+      "instructions": "Classify whether the supplied policy change materially affects the specified component responsibilities after the listed exact scope checks. Treat missing or undocumented ownership of the affected responsibility as unclear rather than assuming the component is unaffected.",
       "criteria": {
-        "unaffected": "The change concerns responsibilities or data outside the supplied component's bounded scope.",
-        "affected": "The change directly changes a responsibility, constraint, retention rule, control or behavior owned by the supplied component.",
-        "unclear": "The relationship between the change and component scope is incomplete, indirect or ambiguous."
+        "unaffected": "The supplied responsibilities or explicit scope evidence clearly place the affected responsibility and data outside this component; absence of documented ownership alone is not enough.",
+        "affected": "The change directly changes a responsibility, constraint, retention rule, control or behavior the supplied component clearly owns or performs.",
+        "unclear": "Ownership or participation in the affected responsibility is missing, incomplete, indirect, mixed or otherwise ambiguous in the supplied scope."
       }
     }
   },
