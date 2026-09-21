@@ -1,6 +1,6 @@
 ---
 name: brida-reflex-marketplace-job-fit
-description: "Implement and verify the Brida Reflex Marketplace job fit use case: determine whether a bounded automation can realistically fulfill a marketplace brief. Use when the user names marketplace-job-fit, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview."
+description: "Implement and verify the Brida Reflex Marketplace job fit use case: classify whether a bounded automation opportunity is a credible fit, clearly not a fit, or needs clarification before any bid/review effort is spent. Use when the user names marketplace-job-fit, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview."
 ---
 
 # Marketplace job fit
