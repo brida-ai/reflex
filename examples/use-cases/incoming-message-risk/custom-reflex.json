@@ -1,0 +1,87 @@
+{
+  "id": "incoming-message-risk",
+  "version": "1",
+  "name": "Incoming message risk",
+  "max_state_bytes": 12288,
+  "data_class": "non_sensitive",
+  "question_set_version": "incoming-message-risk-questions@1",
+  "questions": {
+    "riskClass": {
+      "type": "choice",
+      "instructions": "Classify the semantic risk of the supplied incoming message after the listed deterministic checks. Judge only the message context supplied; do not infer facts or authority that are absent.",
+      "criteria": {
+        "routine": "The message is semantically consistent with ordinary expected communication and does not materially request credentials, secrets, protected actions, or deceptive urgency.",
+        "suspicious": "The message contains unusual, mixed, ambiguous, or weak social-engineering signals that warrant security or human review, but the supplied evidence does not strongly establish a malicious lure.",
+        "high_risk": "The message strongly exhibits credential theft, impersonation, coercive social engineering, secret solicitation, or another explicit lure toward a protected action."
+      }
+    }
+  },
+  "policy_version": "incoming-message-risk-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "riskClass",
+    "branches": {
+      "routine": "routine_candidate",
+      "suspicious": "security_review",
+      "high_risk": "high_risk_candidate"
+    },
+    "minimumSelectedProbability": 0.8,
+    "uncertainBranch": "security_review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-routine-project-update",
+      "evidenceClass": "synthetic",
+      "state": {
+        "subject": "Updated project schedule",
+        "messageExcerpt": "The published maintenance window moved to Thursday at 14:00 UTC. The status page has the revised schedule.",
+        "senderRelationship": "expected service notification",
+        "destinationClass": "same_service_status_page",
+        "protectedActionRequested": false,
+        "deterministicSignals": {
+          "authentication": "pass",
+          "knownMaliciousUrl": false,
+          "attachmentScan": "not_applicable",
+          "exactBlocklistMatch": false
+        }
+      },
+      "expectedBranch": "routine_candidate"
+    },
+    {
+      "id": "synthetic-credential-lure",
+      "evidenceClass": "synthetic",
+      "state": {
+        "subject": "Urgent account verification required",
+        "messageExcerpt": "Your workspace will be disabled in 15 minutes. Open the attached sign-in page and reply with your password and recovery code so support can verify the account.",
+        "senderRelationship": "unexpected external sender claiming to be support",
+        "destinationClass": "external_sign_in_page",
+        "protectedActionRequested": true,
+        "deterministicSignals": {
+          "authentication": "unknown",
+          "knownMaliciousUrl": false,
+          "attachmentScan": "clean",
+          "exactBlocklistMatch": false
+        }
+      },
+      "expectedBranch": "high_risk_candidate"
+    },
+    {
+      "id": "synthetic-unusual-vendor-change",
+      "evidenceClass": "synthetic",
+      "state": {
+        "subject": "Please use our new payment instructions",
+        "messageExcerpt": "For the next invoice, please use different payment instructions. Our normal contact is unavailable today; confirm you received this message.",
+        "senderRelationship": "plausible vendor context but unexpected change",
+        "destinationClass": "no_link",
+        "protectedActionRequested": true,
+        "deterministicSignals": {
+          "authentication": "pass",
+          "knownMaliciousUrl": false,
+          "attachmentScan": "not_applicable",
+          "exactBlocklistMatch": false
+        }
+      },
+      "expectedBranch": "security_review"
+    }
+  ]
+}
