@@ -81,13 +81,13 @@ The repository ships an intent-first Brida Reflex Skill plus focused skills gene
 Use the general skill when you want the agent to choose or design the right Reflex:
 
 ```bash
-npx skills add brida-ai/reflex --skill brida-reflex
+npx skills add brida-ai/reflex@brida-reflex
 ```
 
 If the use case is already known, install the focused skill directly. For example, semantic AdBlock/content blocking:
 
 ```bash
-npx skills add brida-ai/reflex --skill brida-reflex-semantic-content-blocking
+npx skills add brida-ai/reflex@brida-reflex-semantic-content-blocking
 ```
 
 For Claude Code, the repository is also a plugin marketplace:
