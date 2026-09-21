@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { access, readFile, readdir } from 'node:fs/promises'
+import { readFile, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import test from 'node:test'
 import YAML from 'yaml'
@@ -23,8 +23,12 @@ test('every Reflex use case has one synchronized focused skill', async () => {
 
   for (const id of useCases) {
     const definitionPath = join(useCasesRoot, id, 'custom-reflex.json')
-    try { await access(definitionPath) } catch { continue }
-    const definition = JSON.parse(await readFile(definitionPath, 'utf8'))
+    let definitionText
+    try { definitionText = await readFile(definitionPath, 'utf8') } catch (error) {
+      if (error?.code === 'ENOENT') continue
+      throw error
+    }
+    const definition = JSON.parse(definitionText)
     const skillDir = join(skillsRoot, 'brida-reflex-' + id)
     const skill = await readFile(join(skillDir, 'SKILL.md'), 'utf8')
     const frontmatter = parseFrontmatter(skill)
@@ -32,7 +36,7 @@ test('every Reflex use case has one synchronized focused skill', async () => {
     assert.equal(frontmatter.name, 'brida-reflex-' + id)
     assert.ok(frontmatter.description.length > 40)
     assert.ok(frontmatter.description.length <= 1024)
-    await access(join(skillDir, 'agents', 'openai.yaml'))
+    assert.ok((await readFile(join(skillDir, 'agents', 'openai.yaml'), 'utf8')).length > 0)
     const bundled = JSON.parse(await readFile(join(skillDir, 'references', 'custom-reflex.json'), 'utf8'))
     assert.deepEqual(bundled, definition)
     const playbook = await readFile(join(skillDir, 'references', 'playbook.md'), 'utf8')
@@ -50,7 +54,7 @@ test('core Reflex skill is intent-first and has progressive references', async (
   assert.match(core, /Open-ended discovery -> brief audit/u)
   assert.match(core, /Verification \/ benchmark -> test, do not assume/u)
   for (const file of ['current-contract.md', 'discovery.md', 'implementation.md', 'question-design.md', 'composition.md', 'verification.md', 'use-case-index.md']) {
-    await access(join(skillsRoot, 'brida-reflex', 'references', file))
+    assert.ok((await readFile(join(skillsRoot, 'brida-reflex', 'references', file), 'utf8')).length > 0)
   }
 })
 
