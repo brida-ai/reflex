@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Reflex Semantic Content Filter (Demo)",
+  "version": "0.1.0",
+  "description": "Demonstrates bounded semantic content blocking through a trusted local Reflex companion.",
+  "permissions": ["storage"],
+  "host_permissions": ["http://127.0.0.1:8787/*"],
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
