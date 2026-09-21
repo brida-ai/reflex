@@ -1,6 +1,6 @@
 ---
 name: brida-reflex-research-claim-verification
-description: "Implement and verify the Brida Reflex Research claim verification gate use case: decide whether a claim is supported enough to continue, contradicted enough to stop, or needs more verification. Use when the user names research-claim-verification, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview. Triggers include: claim verification, citation check, evidence verification."
+description: "Implement and verify the Brida Reflex Research claim verification gate use case: decide whether a bounded claim is supported enough to continue, materially contradicted enough to stop, or still needs verification. Use when the user names research-claim-verification, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview. Triggers include: claim verification, citation check, evidence verification."
 ---
 
 # Research claim verification gate
