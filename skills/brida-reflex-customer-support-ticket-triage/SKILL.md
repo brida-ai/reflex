@@ -1,6 +1,6 @@
 ---
 name: brida-reflex-customer-support-ticket-triage
-description: "Implement and verify the Brida Reflex Customer support ticket triage use case: choose whether a synthetic support ticket should be escalated, queued normally, or served with an existing answer. Use when the user names customer-support-ticket-triage, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview. Triggers include: support triage, ticket routing, support queue."
+description: "Implement and verify the Brida Reflex Customer support ticket triage use case: choose whether a bounded synthetic support ticket should be escalated, queued normally, served with an existing answer, or reviewed when routing is uncertain. Use when the user names customer-support-ticket-triage, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview. Triggers include: support triage, ticket routing, support queue."
 ---
 
 # Customer support ticket triage
