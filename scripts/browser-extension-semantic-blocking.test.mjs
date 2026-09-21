@@ -43,6 +43,18 @@ test('candidate state is bounded before a Reflex request', () => {
     destinationClass: 'external',
   }))
   assert.throws(() => validateCandidateState({ visibleText: 'x'.repeat(701) }))
+  assert.throws(() => validateCandidateState({
+    visibleText: 'Candidate',
+    cookie: 'must-not-cross-boundary',
+  }))
+  assert.throws(() => validateCandidateState({
+    visibleText: 'Candidate',
+    nearbyLabel: 'x'.repeat(161),
+  }))
+  assert.throws(() => validateCandidateState({
+    visibleText: 'Candidate',
+    deterministicSignals: { exactAdSelector: 'false' },
+  }))
 })
 
 test('upstream request keeps the Brida credential server-side', () => {
