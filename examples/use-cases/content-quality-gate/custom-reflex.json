@@ -28,7 +28,7 @@
         "branch": "publish_candidate"
       },
       {
-        "atLeast": 1.5,
+        "atLeast": 1.0,
         "branch": "revise"
       }
     ],
@@ -62,6 +62,23 @@
         "draft": "Use Reflex to automate everything."
       },
       "expectedBranch": "reject"
+    },
+    {
+      "id": "synthetic-major-omission",
+      "evidenceClass": "synthetic",
+      "state": {
+        "audience": "Existing users",
+        "requiredFacts": [
+          "Maintenance starts 02:00 UTC",
+          "Expected duration 30 minutes"
+        ],
+        "acceptanceCriteria": [
+          "States impact",
+          "States timing"
+        ],
+        "draft": "We will perform maintenance tonight. Some users may notice an interruption."
+      },
+      "expectedBranch": "revise"
     }
   ]
 }
