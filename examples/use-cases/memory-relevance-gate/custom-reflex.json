@@ -1,0 +1,57 @@
+{
+  "id": "memory-relevance-gate",
+  "version": "1",
+  "name": "Memory relevance gate",
+  "max_state_bytes": 12288,
+  "data_class": "non_sensitive",
+  "question_set_version": "memory-relevance-gate-questions@1",
+  "questions": {
+    "relevance": {
+      "type": "choice",
+      "instructions": "Classify the future usefulness of this policy-eligible, non-sensitive observation. Judge durability and likely reuse, not whether storage is authorized.",
+      "criteria": {
+        "durable": "The observation describes a stable preference, convention, relationship, or long-lived fact that is likely to help future interactions in the stated scope.",
+        "transient": "The observation is temporary session state, a one-off event, or information unlikely to remain useful after the current task.",
+        "unclear": "The supplied evidence is too sparse or mixed to judge durable future utility reliably."
+      }
+    }
+  },
+  "policy_version": "memory-relevance-gate-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "relevance",
+    "branches": {
+      "durable": "store_candidate",
+      "transient": "ignore",
+      "unclear": "review"
+    },
+    "minimumSelectedProbability": 0.78,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-durable-convention",
+      "evidenceClass": "synthetic",
+      "state": {
+        "observation": "The project consistently uses UTC timestamps in all exported reports.",
+        "scope": "project-wide formatting convention",
+        "expectedLifetime": "long-lived",
+        "repeatEvidence": "observed across several completed reports",
+        "deterministicPrivacyCheck": "eligible_non_sensitive"
+      },
+      "expectedBranch": "store_candidate"
+    },
+    {
+      "id": "synthetic-transient-status",
+      "evidenceClass": "synthetic",
+      "state": {
+        "observation": "The current preview build is still running and is expected to finish shortly.",
+        "scope": "current execution only",
+        "expectedLifetime": "minutes",
+        "repeatEvidence": "none",
+        "deterministicPrivacyCheck": "eligible_non_sensitive"
+      },
+      "expectedBranch": "ignore"
+    }
+  ]
+}

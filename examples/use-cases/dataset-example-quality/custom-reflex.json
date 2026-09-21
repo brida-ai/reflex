@@ -1,0 +1,63 @@
+{
+  "id": "dataset-example-quality",
+  "version": "1",
+  "name": "Dataset example quality",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "dataset-example-quality-questions@1",
+  "questions": {
+    "quality": {
+      "type": "score",
+      "instructions": "Score whether the supplied synthetic example is coherent, unambiguous and useful for the stated task after deterministic validation has passed.",
+      "criteria": [
+        "1: meaningless, contradictory or unusable",
+        "2: major semantic defects or label conflict",
+        "3: plausible but ambiguous or needs curator revision",
+        "4: coherent and suitable for the stated task",
+        "5: exceptionally clear, unambiguous and representative"
+      ]
+    }
+  },
+  "policy_version": "dataset-example-quality-policy@1",
+  "declarative_policy": {
+    "type": "score",
+    "questionId": "quality",
+    "thresholds": [
+      {
+        "atLeast": 3.5,
+        "branch": "keep_candidate"
+      },
+      {
+        "atLeast": 2,
+        "branch": "review"
+      }
+    ],
+    "belowBranch": "drop_candidate"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-clear-example",
+      "evidenceClass": "synthetic",
+      "state": {
+        "task": "classify support intent",
+        "input": "I was charged twice for the same monthly invoice.",
+        "proposedLabel": "billing_duplicate_charge",
+        "rationale": "The input explicitly describes a duplicate billing charge.",
+        "deterministicValidation": "schema_valid_unique_non_sensitive"
+      },
+      "expectedBranch": "keep_candidate"
+    },
+    {
+      "id": "synthetic-contradictory-example",
+      "evidenceClass": "synthetic",
+      "state": {
+        "task": "classify support intent",
+        "input": "How do I reset my account password?",
+        "proposedLabel": "billing_duplicate_charge",
+        "rationale": "Placeholder rationale unrelated to the input.",
+        "deterministicValidation": "schema_valid_unique_non_sensitive"
+      },
+      "expectedBranch": "drop_candidate"
+    }
+  ]
+}
