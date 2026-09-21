@@ -1,0 +1,49 @@
+{
+  "id": "replace-abstaining-choice-id",
+  "version": "1",
+  "name": "Replace abstaining choice name",
+  "max_state_bytes": 8192,
+  "data_class": "non_sensitive",
+  "question_set_version": "replace-abstaining-choice-questions@1",
+  "questions": {
+    "decision": {
+      "type": "choice",
+      "instructions": "Choose one bounded category. Select none_of_above when the supplied state does not materially fit any declared category.",
+      "criteria": {
+        "first": "Describe the first supported category.",
+        "second": "Describe the second supported category.",
+        "none_of_above": "The state does not materially fit either supported category."
+      }
+    }
+  },
+  "policy_version": "replace-abstaining-choice-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "decision",
+    "branches": {
+      "first": "first_candidate",
+      "second": "second_candidate",
+      "none_of_above": "review"
+    },
+    "minimumSelectedProbability": 0.75,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-first",
+      "evidenceClass": "synthetic",
+      "state": {
+        "example": "Replace with synthetic state that clearly fits the first category."
+      },
+      "expectedBranch": "first_candidate"
+    },
+    {
+      "id": "synthetic-none",
+      "evidenceClass": "synthetic",
+      "state": {
+        "example": "Replace with synthetic state outside both supported categories."
+      },
+      "expectedBranch": "review"
+    }
+  ]
+}
