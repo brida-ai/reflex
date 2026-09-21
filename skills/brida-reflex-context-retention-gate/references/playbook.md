@@ -8,6 +8,7 @@ Data class: `non_sensitive`
 ## Natural-language aliases
 
 - context compaction
+- context compression
 - context pruning
 - memory cleanup
 

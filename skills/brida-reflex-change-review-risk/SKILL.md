@@ -1,6 +1,6 @@
 ---
 name: brida-reflex-change-review-risk
-description: "Implement and verify the Brida Reflex Change review risk use case: classify the semantic review depth a code or configuration change appears to require after deterministic checks have already run. Use when the user names change-review-risk, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview."
+description: "Implement and verify the Brida Reflex Change review risk use case: classify the semantic review depth a code or configuration change appears to require after deterministic checks have already run. Use when the user names change-review-risk, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview. Triggers include: code review triage, review depth, change risk."
 ---
 
 # Change review risk

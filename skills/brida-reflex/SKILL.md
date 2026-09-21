@@ -33,7 +33,7 @@ Read [references/discovery.md](references/discovery.md). Ask at most a few high-
 
 Use this mode when no existing use case or official recipe fits.
 
-Read [references/implementation.md](references/implementation.md). Define the minimum state, Binary/Choice/Score questions, explicit branches, uncertain behavior, deterministic prechecks, fixtures, and authority boundary. Prefer a public use-case pattern when it can be adapted without changing its semantics.
+Read [references/implementation.md](references/implementation.md), [references/question-design.md](references/question-design.md), and [references/composition.md](references/composition.md). Define the minimum state, Binary/Choice/Score questions, explicit branches, uncertain behavior, deterministic prechecks, fixtures, and authority boundary. Prefer a public use-case pattern when it can be adapted without changing its semantics.
 
 ### 4. Verification / benchmark -> test, do not assume
 

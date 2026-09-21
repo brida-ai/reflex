@@ -1,6 +1,6 @@
 ---
 name: brida-reflex-dataset-example-quality
-description: "Implement and verify the Brida Reflex Dataset example quality use case: score one synthetic training/evaluation example against a small quality rubric before it becomes a curation candidate. Use when the user names dataset-example-quality, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview."
+description: "Implement and verify the Brida Reflex Dataset example quality use case: score one synthetic training/evaluation example against a small quality rubric before it becomes a curation candidate. Use when the user names dataset-example-quality, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview. Triggers include: training data screening, dataset curation."
 ---
 
 # Dataset example quality

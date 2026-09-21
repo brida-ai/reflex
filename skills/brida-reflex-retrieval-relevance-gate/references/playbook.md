@@ -10,6 +10,8 @@ Data class: `non_sensitive`
 - RAG relevance
 - retrieval gate
 - search relevance
+- semantic search
+- repo navigation
 
 ## Decision
 

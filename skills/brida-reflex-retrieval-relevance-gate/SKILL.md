@@ -1,6 +1,6 @@
 ---
 name: brida-reflex-retrieval-relevance-gate
-description: "Implement and verify the Brida Reflex Retrieval relevance gate use case: decide whether a retrieved candidate is semantically relevant enough to remain in a downstream evidence set. Use when the user names retrieval-relevance-gate, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview. Triggers include: RAG relevance, retrieval gate, search relevance."
+description: "Implement and verify the Brida Reflex Retrieval relevance gate use case: decide whether a retrieved candidate is semantically relevant enough to remain in a downstream evidence set. Use when the user names retrieval-relevance-gate, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview. Triggers include: RAG relevance, retrieval gate, search relevance, semantic search, repo navigation."
 ---
 
 # Retrieval relevance gate
