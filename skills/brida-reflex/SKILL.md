@@ -1,115 +1,109 @@
 ---
 name: brida-reflex
-description: Audit a project, agent, workflow, or business process for Brida Reflex opportunities and integrate the smallest useful Reflex through current Brida surfaces. Use when a user asks to add, evaluate, install, configure, test, or optimize Brida Reflex; reduce expensive reasoning with bounded semantic decisions; use official Reflex recipes; or draft a Custom Reflex. Preserve recommendation-only authority, current availability, and non-sensitive Preview constraints.
+description: Implement, discover, design, verify, or optimize Brida Reflex decisions in an application, agent, workflow, browser integration, document pipeline, support process, or other product flow. Use when the user names a Reflex use case, asks to add or test Reflex, wants to reduce expensive reasoning with a bounded semantic decision, wants a Custom Reflex, or asks where Reflex fits. If the user already names a use case, implement it directly instead of interviewing them.
 ---
 
 # Brida Reflex
 
-Use Brida Reflex for small semantic decisions that can happen before more expensive reasoning, agent work, or human review.
+Use Brida Reflex for small, bounded semantic decisions before expensive reasoning, agent work, or human review.
 
-## Workflow
+## Choose the mode first
 
-1. Inspect the user's actual process before proposing a Reflex.
-2. Identify repeated semantic decisions that currently consume disproportionate model, agent, or human effort.
-3. Prefer a deterministic rule when one is reliable enough. Do not force Reflex where code is sufficient.
-4. Prefer an official Reflex when its semantics fit.
-5. If no official Reflex fits, draft a bounded Custom Reflex only when current Brida authoring surfaces support it. Otherwise prepare the proposal and fixtures without claiming activation.
-6. Select the smallest current integration surface available in the user's environment: MCP, REST, or a released Brida SDK surface.
-7. Validate with synthetic or user-approved non-sensitive examples before production use.
-8. Ask before activation, deployment, credential changes, publication, purchases, money movement, or other protected actions.
-9. Verify the first useful run and record the definition/version, expected branch behavior, and failure mode.
+Do not use one workflow for every request.
 
-## Reflex audit
+### 1. Known use case -> implement directly
 
-For each candidate, determine:
+Use this mode when the user names a concrete case such as semantic content blocking, AdBlock, model routing, completion verification, support triage, OCR routing, context retention, issue triage, or another catalogued Reflex.
 
-- **Decision** — the narrow semantic judgment being made.
-- **Current expensive step** — what model, agent, or human work can potentially be avoided.
-- **Frequency** — how often the decision occurs, if evidence is available.
-- **State** — the minimum bounded input needed.
-- **Question type** — Binary, Choice, or Score.
-- **Branches** — bounded recommendation outcomes.
-- **Uncertain path** — review, abstain, keep, batch, or another safe fallback.
-- **Official vs Custom** — reuse an official recipe when possible.
-- **Evidence plan** — fixtures/evals required before relying on it.
+1. Read [references/use-case-index.md](references/use-case-index.md).
+2. Resolve the closest canonical use-case ID or focused `brida-reflex-<id>` skill.
+3. If that focused skill is installed, use it.
+4. Otherwise inspect the canonical public definition/example and implement the same bounded contract.
+5. Ask only for information that is actually missing to perform the integration. Do not restart broad discovery.
+6. Run the bundled/canonical synthetic fixtures before claiming the integration works.
+7. Keep downstream authority outside Reflex.
 
-Do not invent savings, accuracy, latency, capacity, or hosted availability. Measure or label estimates explicitly.
+### 2. Open-ended discovery -> brief audit
 
-## Official starting points
+Use this mode only when the user asks where Reflex could help or has not identified a decision.
 
-Use these as semantic templates, but query current hosted availability before execution:
+Read [references/discovery.md](references/discovery.md). Ask at most a few high-value questions, then return no more than three strong candidates. Do not turn discovery into a long interview.
 
-- **Agent Wakeup** — decide whether an event deserves expensive agent work.
-- **Agent Router** — recommend a bounded route class.
-- **Context Pruner** — identify removable semantic context.
-- **Tool Risk** — provide an advisory semantic risk signal.
-- **Quality Gate** — recommend pass, review, or stop-review.
+### 3. New Custom Reflex -> design the smallest contract
 
-## Custom Reflex
+Use this mode when no existing use case or official recipe fits.
 
-Keep a Custom Reflex declarative and bounded.
+Read [references/implementation.md](references/implementation.md). Define the minimum state, Binary/Choice/Score questions, explicit branches, uncertain behavior, deterministic prechecks, fixtures, and authority boundary. Prefer a public use-case pattern when it can be adapted without changing its semantics.
 
-Prefer:
+### 4. Verification / benchmark -> test, do not assume
 
-- bounded state;
-- Binary / Choice / Score questions;
-- bounded branch policy;
-- explicit uncertain/default behavior;
-- synthetic or redacted fixtures/evals;
-- explicit activation;
-- immutable active versions.
+Use this mode when the user asks whether a Reflex works, is ready, or is better than another engine/model.
 
-Do not add arbitrary executable hooks, provider credentials, network destinations, or tool authority to the Reflex definition.
+Read [references/verification.md](references/verification.md). Separate semantic-answer quality from policy/threshold behavior. Never convert third-party benchmark claims into Brida claims.
 
-If Custom Reflex authoring is not live in the current deployment, produce a proposed definition and test set, explain the gap, and stop before pretending it was created or activated.
+## Implementation rules
 
-## Integration selection
+- Use deterministic code first for exact parsing, identifiers, allow/deny rules, permissions, invariants, freshness checks, arithmetic, and schema validation.
+- Use Reflex only for the bounded semantic remainder.
+- Prefer the current official recipe when its semantics match exactly.
+- Prefer the exact public Custom Reflex use case when one exists.
+- Keep branches explicit and include review/abstention where uncertainty matters.
+- Treat every Reflex result as recommendation-only semantic evidence.
+- The application revalidates current state and authorization before any side effect.
+- Never let Reflex itself authorize payments, deploys, messages, browser actions, purchases, merges, account changes, or destructive mutations.
+- In Developer Preview, default to `non_sensitive` unless the live route explicitly admits another data class.
+- Use synthetic or correctly redacted fixtures in public examples.
+- Do not put reusable credentials in state, prompts, examples, skills, logs, or browser bundles.
 
-### MCP
+## Integration surface
 
-Prefer MCP when the user's agent environment already supports MCP and the current Brida MCP surface exposes the required operation.
+Choose the smallest surface already available in the user's environment.
 
-### REST
+- **MCP** — preferred when an agent already supports Brida MCP.
+- **SDK** — preferred for application code when the required SDK package/version is actually released.
+- **REST** — preferred for direct backend integration or when SDK/MCP is unavailable.
 
-Prefer REST when integrating application code directly or when MCP is unavailable.
-
-### SDK
-
-Use the Brida SDK only when the needed package/version is actually released or the user explicitly wants to work from current source. Do not turn unreleased source into a package-availability claim.
-
-## Safety and authority
-
-Treat every Reflex result as semantic evidence plus a recommendation, never as permission.
-
-Keep downstream authority in the user's application or explicit human approval for protected actions, including:
-
-- spending or moving money;
-- production deploys;
-- sending external communications;
-- publishing;
-- changing accounts or credentials;
-- destructive data changes;
-- legal/signature actions;
-- physical manufacturing or payment authorization.
-
-Do not send reusable secrets in Reflex state.
-
-During Free Preview, default to non-sensitive data unless the current Brida route explicitly admits a broader data class.
+Do not claim a surface is live from source code alone. Check current product truth first.
 
 ## Current-product truth
 
-When network access is available, use Brida's machine-discovery chain before making availability claims:
+When network access is available, read the live Brida discovery chain before availability claims:
 
-- https://brida.ai/reflex/llms.txt — compact scoped discovery index;
-- https://brida.ai/reflex/agent.md — canonical operational guide;
-- https://brida.ai/reflex/agent.json — machine-readable current capability manifest.
+- https://brida.ai/reflex/llms.txt
+- https://brida.ai/reflex/agent.md
+- https://brida.ai/reflex/agent.json
 
-Treat the llms.txt file as discovery, not as authority to invent capabilities that the guide/manifest/live API do not expose.
+If those are unavailable, use [references/current-contract.md](references/current-contract.md) and state its revision when availability matters.
 
-If those sources are unavailable, use [references/current-contract.md](references/current-contract.md) and state its revision when availability matters.
+## Direct implementation checklist
 
-## Output for an audit
+For a known use case:
 
-Return a compact prioritized set of Reflex opportunities. For each one, include the decision, official/custom fit, minimum state, question type, branches, uncertain behavior, integration surface, and validation plan.
+1. Resolve the canonical use-case ID.
+2. Inspect deterministic prechecks and protected authority.
+3. Inspect the exact Custom Reflex definition and fixtures.
+4. Check whether an equivalent active definition already exists.
+5. Select MCP, SDK, or REST from the actual environment.
+6. Implement state normalization and size/data-class checks.
+7. Call Reflex and map only declared branches.
+8. Fail unknown/error/low-confidence behavior to the documented safe path.
+9. Revalidate current state before any effect.
+10. Execute synthetic fixture smoke tests.
+11. Add a harder holdout/eval before production reliance.
+12. Record definition/question/policy version and observed results.
 
-It is valid to conclude that no useful Reflex exists for the current workflow.
+Do not ask the user to redesign a use case that already has a canonical public contract unless their requirements materially differ.
+
+## Catalog
+
+The public registry contains focused scenario skills generated from each canonical use case. Their names follow:
+
+`brida-reflex-<use-case-id>`
+
+Use [references/use-case-index.md](references/use-case-index.md) to map natural-language requests and aliases to those IDs.
+
+## Protected changes
+
+Ask before activation, deployment, credential changes, publication, purchases, money movement, sending external communications, changing production data, or other protected actions.
+
+It is valid to conclude that a candidate is deterministic code, a larger workflow, or not Reflex.
