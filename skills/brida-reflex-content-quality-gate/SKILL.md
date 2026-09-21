@@ -1,6 +1,6 @@
 ---
 name: brida-reflex-content-quality-gate
-description: "Implement and verify the Brida Reflex Content quality gate use case: score a draft against explicit acceptance criteria before spending another expensive generation/review cycle. Use when the user names content-quality-gate, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview."
+description: "Implement and verify the Brida Reflex Content quality gate use case: score a bounded draft against explicit acceptance criteria before spending another expensive generation/review cycle. Use when the user names content-quality-gate, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview."
 ---
 
 # Content quality gate
