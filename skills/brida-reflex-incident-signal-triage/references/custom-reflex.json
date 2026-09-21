@@ -1,31 +1,33 @@
 {
   "id": "incident-signal-triage",
-  "version": "1",
+  "version": "2",
   "name": "Incident signal triage",
   "max_state_bytes": 16384,
   "data_class": "non_sensitive",
-  "question_set_version": "incident-signal-triage-questions@1",
+  "question_set_version": "incident-signal-triage-questions@2",
   "questions": {
     "handling": {
       "type": "choice",
-      "instructions": "Classify the handling depth warranted by the supplied operational signal after the listed deterministic checks.",
+      "instructions": "Classify the handling depth warranted by the supplied operational signal after deterministic monitoring rules. Do not infer missing scope, recovery or user impact. Select unclear when material impact/recovery evidence is missing, conflicting or too sparse to distinguish routine observation from investigation.",
       "criteria": {
-        "routine": "Signal is transient, recovered or low-impact with no supplied evidence of ongoing material user impact.",
-        "investigate": "There is a meaningful anomaly or degradation that warrants investigation but no supplied evidence of immediate broad impact.",
-        "escalate": "There is active material user impact, a critical capability is blocked, or the signal indicates a high-consequence incident needing prompt human attention."
+        "routine": "Signal is transient, recovered or low-impact, and the supplied evidence is sufficient to show no ongoing material user impact.",
+        "investigate": "There is a sustained or meaningful anomaly/degradation with enough evidence to warrant investigation, but no supplied evidence of immediate broad or critical active impact.",
+        "escalate": "There is active material user impact, a critical capability is blocked, or the supplied evidence indicates a high-consequence incident needing prompt human attention.",
+        "unclear": "Material scope, recovery or user-impact evidence is missing, conflicting or too sparse to classify reliably."
       }
     }
   },
-  "policy_version": "incident-signal-triage-policy@1",
+  "policy_version": "incident-signal-triage-policy@2",
   "declarative_policy": {
     "type": "choice",
     "questionId": "handling",
     "branches": {
       "routine": "observe",
       "investigate": "investigate",
-      "escalate": "human_attention"
+      "escalate": "human_attention",
+      "unclear": "review"
     },
-    "minimumSelectedProbability": 0.78,
+    "minimumSelectedProbability": 0.72,
     "uncertainBranch": "review"
   },
   "fixtures": [
@@ -43,6 +45,19 @@
       "expectedBranch": "observe"
     },
     {
+      "id": "synthetic-sustained-small-cohort",
+      "evidenceClass": "synthetic",
+      "state": {
+        "capability": "image upload",
+        "signal": "Upload latency has remained about three times baseline for 25 minutes on one storage shard.",
+        "scope": "small user cohort on one shard",
+        "recovery": "not recovered",
+        "userImpact": "uploads complete but are materially slower",
+        "deterministicChecks": "global availability SLO remains within target"
+      },
+      "expectedBranch": "investigate"
+    },
+    {
       "id": "synthetic-active-login-impact",
       "evidenceClass": "synthetic",
       "state": {
@@ -54,6 +69,19 @@
         "deterministicChecks": "critical user path degraded"
       },
       "expectedBranch": "human_attention"
+    },
+    {
+      "id": "synthetic-incomplete-observability",
+      "evidenceClass": "synthetic",
+      "state": {
+        "capability": "report export",
+        "signal": "Several reports mention slowness, but telemetry for the affected interval is incomplete and some retries succeeded.",
+        "scope": "unknown",
+        "recovery": "mixed and not fully observed",
+        "userImpact": "unclear from supplied evidence",
+        "deterministicChecks": "no confirmed SLO breach; monitoring gap exists"
+      },
+      "expectedBranch": "review"
     }
   ]
 }
