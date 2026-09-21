@@ -1,0 +1,56 @@
+{
+  "id": "document-invoice-review",
+  "version": "1",
+  "name": "Invoice review gate",
+  "max_state_bytes": 12288,
+  "data_class": "non_sensitive",
+  "question_set_version": "document-invoice-review-questions@1",
+  "questions": {
+    "needsReview": {
+      "type": "binary",
+      "instructions": "Does this synthetic invoice summary need manual review before the normal accounting workflow continues?",
+      "criteria": {
+        "true": "There is a material mismatch, missing required field, duplicate indicator, or unclear exception in the supplied summary.",
+        "false": "Required fields are present and the supplied totals and purchase-order facts are internally consistent."
+      }
+    }
+  },
+  "policy_version": "document-invoice-review-policy@1",
+  "declarative_policy": {
+    "type": "binary",
+    "questionId": "needsReview",
+    "trueBranch": "review",
+    "falseBranch": "continue",
+    "uncertainBranch": "review",
+    "trueWhenProbabilityAtLeast": 0.78,
+    "falseWhenProbabilityAtMost": 0.2
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-mismatch",
+      "evidenceClass": "synthetic",
+      "state": {
+        "invoiceId": "SYN-1042",
+        "subtotal": 1000,
+        "tax": 160,
+        "total": 1360,
+        "purchaseOrderTotal": 1160,
+        "requiredFieldsPresent": true
+      },
+      "expectedBranch": "review"
+    },
+    {
+      "id": "synthetic-clean",
+      "evidenceClass": "synthetic",
+      "state": {
+        "invoiceId": "SYN-1043",
+        "subtotal": 1000,
+        "tax": 160,
+        "total": 1160,
+        "purchaseOrderTotal": 1160,
+        "requiredFieldsPresent": true
+      },
+      "expectedBranch": "continue"
+    }
+  ]
+}

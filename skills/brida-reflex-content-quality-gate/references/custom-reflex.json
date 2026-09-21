@@ -1,0 +1,84 @@
+{
+  "id": "content-quality-gate",
+  "version": "1",
+  "name": "Content quality gate",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "content-quality-gate-questions@1",
+  "questions": {
+    "quality": {
+      "type": "score",
+      "instructions": "Score the supplied draft against the explicit audience, required facts and acceptance criteria. Judge fitness for the stated purpose, not writing style preference.",
+      "criteria": [
+        "Materially wrong or missing the required purpose",
+        "Major omissions or contradictions",
+        "Usable but needs meaningful revision",
+        "Meets the stated acceptance criteria",
+        "Clearly meets the criteria with no material issue"
+      ]
+    }
+  },
+  "policy_version": "content-quality-gate-policy@1",
+  "declarative_policy": {
+    "type": "score",
+    "questionId": "quality",
+    "thresholds": [
+      {
+        "atLeast": 3.5,
+        "branch": "publish_candidate"
+      },
+      {
+        "atLeast": 1,
+        "branch": "revise"
+      }
+    ],
+    "belowBranch": "reject"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-good",
+      "evidenceClass": "synthetic",
+      "state": {
+        "audience": "New users",
+        "requiredFacts": [
+          "Free Preview",
+          "No card required",
+          "Recommendation only"
+        ],
+        "draft": "Try the Free Preview with no card required. Reflex returns a recommendation; your application keeps authority over actions."
+      },
+      "expectedBranch": "publish_candidate"
+    },
+    {
+      "id": "synthetic-missing",
+      "evidenceClass": "synthetic",
+      "state": {
+        "audience": "New users",
+        "requiredFacts": [
+          "Free Preview",
+          "No card required",
+          "Recommendation only"
+        ],
+        "draft": "Use Reflex to automate everything."
+      },
+      "expectedBranch": "reject"
+    },
+    {
+      "id": "synthetic-major-omission",
+      "evidenceClass": "synthetic",
+      "state": {
+        "audience": "Existing users",
+        "requiredFacts": [
+          "Maintenance starts 02:00 UTC",
+          "Expected duration 30 minutes"
+        ],
+        "acceptanceCriteria": [
+          "States impact",
+          "States timing"
+        ],
+        "draft": "We will perform maintenance tonight. Some users may notice an interruption."
+      },
+      "expectedBranch": "revise"
+    }
+  ]
+}

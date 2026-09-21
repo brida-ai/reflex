@@ -1,0 +1,71 @@
+{
+  "id": "game-state-action",
+  "version": "1",
+  "name": "Game state action",
+  "max_state_bytes": 8192,
+  "data_class": "non_sensitive",
+  "question_set_version": "game-state-action-questions@1",
+  "questions": {
+    "action": {
+      "type": "choice",
+      "instructions": "Choose the tactical action that best fits the supplied game state and objective. All listed options are legal; do not invent another action.",
+      "criteria": {
+        "advance": "Move toward the objective when resources and local pressure make forward progress favorable.",
+        "defend": "Protect the current objective or strong position when holding ground is more valuable than moving.",
+        "retreat": "Disengage when remaining engaged creates disproportionate risk and the objective does not require holding.",
+        "hold": "Maintain position temporarily when committing to advance, defend or retreat is not yet justified."
+      }
+    }
+  },
+  "policy_version": "game-state-action-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "action",
+    "branches": {
+      "advance": "advance_candidate",
+      "defend": "defend_candidate",
+      "retreat": "retreat_candidate",
+      "hold": "hold_candidate"
+    },
+    "minimumSelectedProbability": 0.72,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-advance",
+      "evidenceClass": "synthetic",
+      "state": {
+        "objective": "capture the unoccupied checkpoint ahead",
+        "health": "high",
+        "resources": "high",
+        "enemyPressure": "low",
+        "currentPosition": "safe approach route",
+        "legalActions": [
+          "advance",
+          "defend",
+          "retreat",
+          "hold"
+        ]
+      },
+      "expectedBranch": "advance_candidate"
+    },
+    {
+      "id": "synthetic-defend",
+      "evidenceClass": "synthetic",
+      "state": {
+        "objective": "prevent capture of the secured checkpoint",
+        "health": "medium",
+        "resources": "adequate",
+        "enemyPressure": "high and approaching",
+        "currentPosition": "strong cover on the objective",
+        "legalActions": [
+          "advance",
+          "defend",
+          "retreat",
+          "hold"
+        ]
+      },
+      "expectedBranch": "defend_candidate"
+    }
+  ]
+}

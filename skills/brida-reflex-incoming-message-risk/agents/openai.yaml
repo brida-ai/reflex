@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Incoming message risk"
+  short_description: "Implement the incoming-message-risk Reflex use case"

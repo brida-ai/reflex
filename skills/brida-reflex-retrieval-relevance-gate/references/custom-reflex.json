@@ -1,0 +1,50 @@
+{
+  "id": "retrieval-relevance-gate",
+  "version": "1",
+  "name": "Retrieval relevance gate",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "retrieval-relevance-gate-questions@1",
+  "questions": {
+    "relevant": {
+      "type": "binary",
+      "instructions": "Does the supplied candidate materially address the stated information need, based only on the supplied query and candidate content?",
+      "criteria": {
+        "true": "The candidate directly addresses a material part of the information need and could be useful evidence or context.",
+        "false": "The candidate is about a different topic, is only superficially related, or does not materially help answer the information need."
+      }
+    }
+  },
+  "policy_version": "retrieval-relevance-gate-policy@1",
+  "declarative_policy": {
+    "type": "binary",
+    "questionId": "relevant",
+    "trueBranch": "include_candidate",
+    "falseBranch": "discard",
+    "uncertainBranch": "review",
+    "trueWhenProbabilityAtLeast": 0.82,
+    "falseWhenProbabilityAtMost": 0.18
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-relevant",
+      "evidenceClass": "synthetic",
+      "state": {
+        "query": "What caused the service interruption?",
+        "candidate": "The incident summary says a failed database migration caused elevated errors and the rollback restored service.",
+        "sourceClass": "synthetic_incident_summary"
+      },
+      "expectedBranch": "include_candidate"
+    },
+    {
+      "id": "synthetic-irrelevant",
+      "evidenceClass": "synthetic",
+      "state": {
+        "query": "What caused the service interruption?",
+        "candidate": "The product roadmap lists planned dashboard improvements for the next quarter.",
+        "sourceClass": "synthetic_roadmap"
+      },
+      "expectedBranch": "discard"
+    }
+  ]
+}

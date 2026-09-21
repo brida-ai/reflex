@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Semantic record match"
+  short_description: "Implement the semantic-record-match Reflex use case"

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Context retention gate"
+  short_description: "Implement the context-retention-gate Reflex use case"

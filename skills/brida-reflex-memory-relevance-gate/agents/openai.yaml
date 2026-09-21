@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Memory relevance gate"
+  short_description: "Implement the memory-relevance-gate Reflex use case"

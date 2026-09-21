@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Incident signal triage"
+  short_description: "Implement the incident-signal-triage Reflex use case"

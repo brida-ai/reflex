@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Sponsor segment detection"
+  short_description: "Implement the sponsor-segment-detection Reflex use case"

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Change review risk"
+  short_description: "Implement the change-review-risk Reflex use case"

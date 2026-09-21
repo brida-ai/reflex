@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Marketplace job fit"
+  short_description: "Implement the marketplace-job-fit Reflex use case"

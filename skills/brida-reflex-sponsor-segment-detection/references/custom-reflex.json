@@ -1,0 +1,81 @@
+{
+  "id": "sponsor-segment-detection",
+  "version": "1",
+  "name": "Sponsor segment detection",
+  "max_state_bytes": 12288,
+  "data_class": "non_sensitive",
+  "question_set_version": "sponsor-segment-detection-questions@1",
+  "questions": {
+    "segmentClass": {
+      "type": "choice",
+      "instructions": "Classify the supplied bounded media segment by its semantic role. Judge only whether it is primary program content, materially sponsorship/promotional content, or ambiguous.",
+      "criteria": {
+        "primary": "The segment materially advances the main editorial, educational, entertainment, or requested program content.",
+        "sponsorship": "The segment materially promotes a sponsor, product, service, affiliate offer, discount, or paid placement rather than advancing the primary program content.",
+        "ambiguous": "The segment mixes program and promotional content, or the supplied excerpt is insufficient to classify reliably."
+      }
+    }
+  },
+  "policy_version": "sponsor-segment-detection-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "segmentClass",
+    "branches": {
+      "primary": "keep_candidate",
+      "sponsorship": "skip_candidate",
+      "ambiguous": "review"
+    },
+    "minimumSelectedProbability": 0.78,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-main-explanation",
+      "evidenceClass": "synthetic",
+      "state": {
+        "mediaContext": "software engineering podcast",
+        "segmentText": "The reason the migration failed was that the new index was built before the replica had caught up.",
+        "nearbyDisclosure": "",
+        "segmentPosition": "middle",
+        "deterministicChecks": {
+          "transcriptAvailable": true,
+          "exactSponsorMarker": false,
+          "seekSupported": true
+        }
+      },
+      "expectedBranch": "keep_candidate"
+    },
+    {
+      "id": "synthetic-sponsor-read",
+      "evidenceClass": "synthetic",
+      "state": {
+        "mediaContext": "software engineering podcast",
+        "segmentText": "This episode is supported by Example Cloud. Use code SAMPLE30 for 30 percent off your first three months.",
+        "nearbyDisclosure": "Partner message",
+        "segmentPosition": "middle",
+        "deterministicChecks": {
+          "transcriptAvailable": true,
+          "exactSponsorMarker": false,
+          "seekSupported": true
+        }
+      },
+      "expectedBranch": "skip_candidate"
+    },
+    {
+      "id": "synthetic-review-unit-disclosure",
+      "evidenceClass": "synthetic",
+      "state": {
+        "mediaContext": "camera review video",
+        "segmentText": "I used Example Lens for this test. They also provided the lens for review, but the next results are my own measurements.",
+        "nearbyDisclosure": "provided review unit",
+        "segmentPosition": "early",
+        "deterministicChecks": {
+          "transcriptAvailable": true,
+          "exactSponsorMarker": false,
+          "seekSupported": true
+        }
+      },
+      "expectedBranch": "keep_candidate"
+    }
+  ]
+}

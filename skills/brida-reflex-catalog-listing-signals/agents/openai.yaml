@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Catalog listing signals"
+  short_description: "Implement the catalog-listing-signals Reflex use case"

@@ -1,0 +1,66 @@
+{
+  "id": "semantic-response-health",
+  "version": "1",
+  "name": "Semantic response health",
+  "max_state_bytes": 12288,
+  "data_class": "non_sensitive",
+  "question_set_version": "semantic-response-health-questions@1",
+  "questions": {
+    "outcome": {
+      "type": "choice",
+      "instructions": "Classify what the normalized transport-successful payload establishes about the requested operation. Distinguish explicit completion from explicit semantic failure and from an unresolved acknowledgement or queued state.",
+      "criteria": {
+        "completed": "The payload explicitly confirms that the requested operation itself completed successfully and its expected result is available.",
+        "failed": "The payload explicitly indicates failure, rejection, unavailability, maintenance, or that the requested operation could not be completed.",
+        "unresolved": "The payload acknowledges, accepts, queues, or receives the request but does not establish whether the requested operation ultimately completed or failed."
+      }
+    }
+  },
+  "policy_version": "semantic-response-health-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "outcome",
+    "branches": {
+      "completed": "continue_candidate",
+      "failed": "failure_review",
+      "unresolved": "review"
+    },
+    "minimumSelectedProbability": 0.75,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-disguised-failure",
+      "evidenceClass": "synthetic",
+      "state": {
+        "transportStatus": 200,
+        "operation": "fetch report",
+        "payloadSummary": "Service is under maintenance. The report is unavailable; retry later.",
+        "deterministicProtocolValidation": "valid_success_envelope"
+      },
+      "expectedBranch": "failure_review"
+    },
+    {
+      "id": "synthetic-normal-success",
+      "evidenceClass": "synthetic",
+      "state": {
+        "transportStatus": 200,
+        "operation": "fetch report",
+        "payloadSummary": "Report is ready and contains the requested records.",
+        "deterministicProtocolValidation": "valid_success_envelope"
+      },
+      "expectedBranch": "continue_candidate"
+    },
+    {
+      "id": "synthetic-unresolved-acceptance",
+      "evidenceClass": "synthetic",
+      "state": {
+        "transportStatus": 200,
+        "operation": "generate export",
+        "payloadSummary": "The export request was received. Processing state is not included in this response.",
+        "deterministicProtocolValidation": "valid_success_envelope"
+      },
+      "expectedBranch": "review"
+    }
+  ]
+}

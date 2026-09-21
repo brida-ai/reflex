@@ -1,0 +1,62 @@
+{
+  "id": "semantic-cache-reuse-gate",
+  "version": "1",
+  "name": "Semantic cache reuse gate",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "semantic-cache-reuse-gate-questions@1",
+  "questions": {
+    "applicable": {
+      "type": "binary",
+      "instructions": "Is the supplied cached answer materially applicable to the current request, given that the listed deterministic cache-safety checks already passed?",
+      "criteria": {
+        "true": "The current request asks for materially the same information under the same supplied scope, and the cached answer directly addresses it.",
+        "false": "A material scope, entity, jurisdiction, time, constraint, or requested outcome differs so the cached answer should not be reused."
+      }
+    }
+  },
+  "policy_version": "semantic-cache-reuse-gate-policy@1",
+  "declarative_policy": {
+    "type": "binary",
+    "questionId": "applicable",
+    "trueBranch": "reuse_candidate",
+    "falseBranch": "miss",
+    "uncertainBranch": "review",
+    "trueWhenProbabilityAtLeast": 0.82,
+    "falseWhenProbabilityAtMost": 0.18
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-paraphrase",
+      "evidenceClass": "synthetic",
+      "state": {
+        "currentRequest": "Where can I rotate an API credential?",
+        "cachedRequest": "How do I replace an existing API key?",
+        "cachedAnswerSummary": "Open the API credentials settings, create a replacement credential, update the client, then revoke the old credential.",
+        "deterministicChecks": {
+          "sameAuthorizedNamespace": true,
+          "ttlValid": true,
+          "policyVersionMatches": true,
+          "revoked": false
+        }
+      },
+      "expectedBranch": "reuse_candidate"
+    },
+    {
+      "id": "synthetic-scope-change",
+      "evidenceClass": "synthetic",
+      "state": {
+        "currentRequest": "What retention policy applies in the EU region?",
+        "cachedRequest": "What retention policy applies in the US region?",
+        "cachedAnswerSummary": "The US-region retention policy summary for this synthetic service.",
+        "deterministicChecks": {
+          "sameAuthorizedNamespace": true,
+          "ttlValid": true,
+          "policyVersionMatches": true,
+          "revoked": false
+        }
+      },
+      "expectedBranch": "miss"
+    }
+  ]
+}

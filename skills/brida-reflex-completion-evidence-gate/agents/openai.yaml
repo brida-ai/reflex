@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Completion evidence gate"
+  short_description: "Implement the completion-evidence-gate Reflex use case"

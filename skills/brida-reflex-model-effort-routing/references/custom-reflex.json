@@ -1,0 +1,129 @@
+{
+  "id": "model-effort-routing",
+  "version": "1",
+  "name": "Model effort routing",
+  "max_state_bytes": 12288,
+  "data_class": "non_sensitive",
+  "question_set_version": "model-effort-routing-questions@1",
+  "questions": {
+    "effortTier": {
+      "type": "choice",
+      "instructions": "Recommend the smallest abstract effort tier that appears sufficient for the supplied task. Judge semantic task difficulty only; provider availability, explicit user choices, cost policy and deterministic tier floors remain host-owned.",
+      "criteria": {
+        "fast": "The task is local, mechanical, highly specified or shallow, with little dependency reasoning and limited verification burden.",
+        "balanced": "The task requires material reasoning, implementation, debugging, comparison or verification, but remains bounded and does not require broad long-horizon coordination.",
+        "deep": "The task requires difficult multi-step reasoning, broad cross-component synthesis, long-horizon planning, architectural tradeoffs or substantial verification across interacting constraints.",
+        "unclear": "The supplied context is too sparse, mixed or ambiguous to recommend an effort tier reliably."
+      }
+    },
+    "reasoningDemand": {
+      "type": "score",
+      "instructions": "Score the semantic reasoning demand of the task itself, independent of provider or model names.",
+      "criteria": [
+        "Mostly mechanical or directly specified",
+        "Some interpretation or localized reasoning",
+        "Material multi-step reasoning",
+        "Broad or difficult multi-step reasoning with interacting constraints"
+      ]
+    },
+    "scopeBreadth": {
+      "type": "score",
+      "instructions": "Score how broadly the task spans components, domains or dependent decisions.",
+      "criteria": [
+        "Single local transformation or narrow fact",
+        "One bounded component or workflow",
+        "Several interacting components or evidence sources",
+        "System-level or cross-domain scope with coupled decisions"
+      ]
+    },
+    "verificationDemand": {
+      "type": "score",
+      "instructions": "Score how much verification is needed before the task can be considered complete.",
+      "criteria": [
+        "Direct deterministic check is sufficient",
+        "A small bounded verification step is needed",
+        "Multiple checks or evidence sources are needed",
+        "Extensive cross-checking, rollback planning or invariant verification is needed"
+      ]
+    }
+  },
+  "policy_version": "model-effort-routing-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "effortTier",
+    "branches": {
+      "fast": "fast_candidate",
+      "balanced": "balanced_candidate",
+      "deep": "deep_candidate",
+      "unclear": "review"
+    },
+    "minimumSelectedProbability": 0.78,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-local-normalization",
+      "evidenceClass": "synthetic",
+      "state": {
+        "requestSummary": "Normalize five already-parsed country codes to uppercase ISO-2 and return the same JSON shape.",
+        "workCharacteristics": {
+          "localScope": true,
+          "requiresMultiStepReasoning": false,
+          "requiresLongHorizonPlanning": false,
+          "requiresCodeGeneration": false,
+          "requiresExternalResearch": false,
+          "ambiguity": "low"
+        }
+      },
+      "expectedBranch": "fast_candidate"
+    },
+    {
+      "id": "synthetic-bounded-debugging",
+      "evidenceClass": "synthetic",
+      "state": {
+        "requestSummary": "Find why one service test started failing after a serializer change, patch the local module, and verify the affected test plus nearby regression tests.",
+        "workCharacteristics": {
+          "localScope": true,
+          "requiresMultiStepReasoning": true,
+          "requiresLongHorizonPlanning": false,
+          "requiresCodeGeneration": true,
+          "requiresExternalResearch": false,
+          "ambiguity": "medium"
+        }
+      },
+      "expectedBranch": "balanced_candidate"
+    },
+    {
+      "id": "synthetic-cross-component-migration",
+      "evidenceClass": "synthetic",
+      "state": {
+        "requestSummary": "Design a backward-compatible migration across authentication, billing and worker modules, including rollout order, failure recovery and invariants across old and new clients.",
+        "workCharacteristics": {
+          "localScope": false,
+          "requiresMultiStepReasoning": true,
+          "requiresLongHorizonPlanning": true,
+          "requiresCodeGeneration": false,
+          "requiresExternalResearch": false,
+          "ambiguity": "medium"
+        }
+      },
+      "expectedBranch": "deep_candidate"
+    },
+    {
+      "id": "synthetic-underspecified-request",
+      "evidenceClass": "synthetic",
+      "state": {
+        "requestSummary": "Make this application much better.",
+        "workCharacteristics": {
+          "localScope": false,
+          "requiresMultiStepReasoning": null,
+          "requiresLongHorizonPlanning": null,
+          "requiresCodeGeneration": null,
+          "requiresExternalResearch": null,
+          "ambiguity": "high"
+        }
+      },
+      "expectedBranch": "review"
+    }
+  ]
+}

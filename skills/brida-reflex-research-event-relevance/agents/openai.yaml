@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Research event relevance"
+  short_description: "Implement the research-event-relevance Reflex use case"

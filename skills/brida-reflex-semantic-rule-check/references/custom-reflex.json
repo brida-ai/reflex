@@ -1,0 +1,74 @@
+{
+  "id": "semantic-rule-check",
+  "version": "1",
+  "name": "Semantic rule check",
+  "max_state_bytes": 12288,
+  "data_class": "non_sensitive",
+  "question_set_version": "semantic-rule-check-questions@1",
+  "questions": {
+    "ruleResult": {
+      "type": "choice",
+      "instructions": "Judge only whether the supplied artifact excerpt materially satisfies the single qualitative rule in state. Do not invent additional coding, style, product, or policy rules.",
+      "criteria": {
+        "satisfies": "The supplied excerpt materially satisfies the stated qualitative rule.",
+        "violates": "The supplied excerpt materially conflicts with or fails the stated qualitative rule.",
+        "unclear": "The excerpt or context is insufficient, mixed, or too ambiguous to judge the rule reliably."
+      }
+    }
+  },
+  "policy_version": "semantic-rule-check-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "ruleResult",
+    "branches": {
+      "satisfies": "pass_candidate",
+      "violates": "violation_candidate",
+      "unclear": "review"
+    },
+    "minimumSelectedProbability": 0.8,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-recoverable-message",
+      "evidenceClass": "synthetic",
+      "state": {
+        "artifactType": "user_error_message",
+        "rule": "A recoverable user-facing error should explain a useful next step without exposing internal implementation details.",
+        "excerpt": "We could not save your draft. Check your connection and try again; your local edits are still available.",
+        "deterministicChecks": {
+          "containsStackTrace": false,
+          "formatValid": true
+        }
+      },
+      "expectedBranch": "pass_candidate"
+    },
+    {
+      "id": "synthetic-internal-error-leak",
+      "evidenceClass": "synthetic",
+      "state": {
+        "artifactType": "user_error_message",
+        "rule": "A recoverable user-facing error should explain a useful next step without exposing internal implementation details.",
+        "excerpt": "NullReferenceError in SaveDraftHandler.ts:184. Request aborted.",
+        "deterministicChecks": {
+          "containsStackTrace": false,
+          "formatValid": true
+        }
+      },
+      "expectedBranch": "violation_candidate"
+    },
+    {
+      "id": "synthetic-vague-action-label",
+      "evidenceClass": "synthetic",
+      "state": {
+        "artifactType": "short_ui_copy",
+        "rule": "The message should make the consequence of the action clear to the user.",
+        "excerpt": "Continue",
+        "deterministicChecks": {
+          "formatValid": true
+        }
+      },
+      "expectedBranch": "violation_candidate"
+    }
+  ]
+}

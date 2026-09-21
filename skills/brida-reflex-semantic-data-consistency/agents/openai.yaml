@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Semantic data consistency"
+  short_description: "Implement the semantic-data-consistency Reflex use case"
