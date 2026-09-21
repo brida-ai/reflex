@@ -13,27 +13,28 @@ on:
         required: true
         type: string
 
-permissions:
-  contents: write
-
 concurrency:
   group: reflex-public-release
   cancel-in-progress: false
 
 jobs:
-  release:
-    name: Verify exact SHA and create immutable release
+  verify:
+    name: Verify exact SHA and release plan
     runs-on: ubuntu-latest
     timeout-minutes: 12
-    env:
-      GH_TOKEN: ${{ github.token }}
+    permissions:
+      contents: read
+    outputs:
+      source_sha: ${{ steps.plan.outputs.source_sha }}
+      version: ${{ steps.plan.outputs.version }}
+      tag: ${{ steps.plan.outputs.tag }}
     steps:
-      - name: Checkout trusted main with full release history
+      - name: Checkout trusted main without persisted credentials
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
 
       - name: Bind release to approved main SHA
         shell: bash
@@ -59,7 +60,7 @@ jobs:
           cache: pnpm
 
       - name: Install from lockfile
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Re-run complete public registry QA
         run: pnpm check
@@ -70,16 +71,42 @@ jobs:
         run: |
           set -euo pipefail
           node scripts/release/plan.mjs "${{ inputs.impact }}" | tee /tmp/release-plan.json
+          SOURCE_SHA="$(git rev-parse HEAD)"
           VERSION="$(node -e "const fs=require('node:fs');const x=JSON.parse(fs.readFileSync('/tmp/release-plan.json','utf8').trim());process.stdout.write(x.version)")"
           TAG="v$VERSION"
+          test -z "$(git status --short)"
+          echo "source_sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+  release:
+    name: Create immutable registry release
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout exact verified source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.verify.outputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify release source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ needs.verify.outputs.source_sha }}"
 
       - name: Create immutable annotated tag
         shell: bash
         run: |
           set -euo pipefail
-          TAG="${{ steps.plan.outputs.tag }}"
+          TAG="${{ needs.verify.outputs.tag }}"
           SHA="$(git rev-parse HEAD)"
           if git rev-parse "$TAG^{commit}" >/dev/null 2>&1; then
             TAG_SHA="$(git rev-parse "$TAG^{commit}")"
@@ -98,9 +125,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          TAG="${{ steps.plan.outputs.tag }}"
+          TAG="${{ needs.verify.outputs.tag }}"
           if gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1; then
             echo "GitHub Release $TAG already exists; leaving it immutable."
           else
-            gh release create "$TAG" --repo "${{ github.repository }}"               --verify-tag --generate-notes --title "Brida Reflex Registry ${{ steps.plan.outputs.version }}"
+            gh release create "$TAG" --repo "${{ github.repository }}"               --verify-tag --generate-notes --title "Brida Reflex Registry ${{ needs.verify.outputs.version }}"
           fi
