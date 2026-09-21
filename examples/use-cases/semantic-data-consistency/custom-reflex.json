@@ -1,0 +1,67 @@
+{
+  "id": "semantic-data-consistency",
+  "version": "1",
+  "name": "Semantic data consistency",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "semantic-data-consistency-questions@1",
+  "questions": {
+    "consistency": {
+      "type": "choice",
+      "instructions": "Classify whether the supplied normalized record is semantically consistent after the listed deterministic validations have already passed.",
+      "criteria": {
+        "consistent": "The structured fields and semantic summary describe a materially coherent state with no supplied semantic contradiction.",
+        "inconsistent": "The supplied fields materially contradict the semantic summary or one another in a way that requires interpreting their meaning.",
+        "unclear": "The supplied evidence is too sparse, mixed or ambiguous to determine semantic consistency reliably."
+      }
+    }
+  },
+  "policy_version": "semantic-data-consistency-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "consistency",
+    "branches": {
+      "consistent": "continue_candidate",
+      "inconsistent": "exception_review",
+      "unclear": "review"
+    },
+    "minimumSelectedProbability": 0.8,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-consistent-deployment",
+      "evidenceClass": "synthetic",
+      "state": {
+        "recordType": "deployment_event",
+        "fields": {
+          "status": "completed",
+          "healthState": "healthy"
+        },
+        "semanticSummary": "The deployment finished successfully and the post-deploy health checks passed.",
+        "deterministicValidation": {
+          "schemaValid": true,
+          "knownInvariantViolation": false
+        }
+      },
+      "expectedBranch": "continue_candidate"
+    },
+    {
+      "id": "synthetic-semantic-contradiction",
+      "evidenceClass": "synthetic",
+      "state": {
+        "recordType": "deployment_event",
+        "fields": {
+          "status": "completed",
+          "healthState": "healthy"
+        },
+        "semanticSummary": "No deployment has started yet and no running version exists.",
+        "deterministicValidation": {
+          "schemaValid": true,
+          "knownInvariantViolation": false
+        }
+      },
+      "expectedBranch": "exception_review"
+    }
+  ]
+}
