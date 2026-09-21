@@ -1,22 +1,22 @@
 {
   "id": "semantic-data-consistency",
-  "version": "1",
+  "version": "2",
   "name": "Semantic data consistency",
   "max_state_bytes": 16384,
   "data_class": "non_sensitive",
-  "question_set_version": "semantic-data-consistency-questions@1",
+  "question_set_version": "semantic-data-consistency-questions@2",
   "questions": {
     "consistency": {
       "type": "choice",
-      "instructions": "Classify whether the supplied normalized record is semantically consistent after the listed deterministic validations have already passed.",
+      "instructions": "Classify whether the supplied normalized record is semantically consistent after exact schema and invariant checks. Use only supplied evidence: do not infer completion, health, approval or other missing state. If sources are tentative, materially mixed, or required semantic evidence is absent and structured fields do not resolve it, select unclear.",
       "criteria": {
-        "consistent": "The structured fields and semantic summary describe a materially coherent state with no supplied semantic contradiction.",
-        "inconsistent": "The supplied fields materially contradict the semantic summary or one another in a way that requires interpreting their meaning.",
-        "unclear": "The supplied evidence is too sparse, mixed or ambiguous to determine semantic consistency reliably."
+        "consistent": "All supplied structured fields and semantic text support one materially coherent state. No material source conflict or unresolved tentative claim remains, and no missing semantic evidence is being inferred.",
+        "inconsistent": "Two or more supplied fields/sources assert materially incompatible states that require interpreting their meaning.",
+        "unclear": "Evidence is materially sparse, tentative or mixed and the supplied structured fields do not resolve the uncertainty well enough to call the record consistent or inconsistent."
       }
     }
   },
-  "policy_version": "semantic-data-consistency-policy@1",
+  "policy_version": "semantic-data-consistency-policy@2",
   "declarative_policy": {
     "type": "choice",
     "questionId": "consistency",
@@ -73,6 +73,23 @@
           "healthState": "unknown"
         },
         "semanticSummary": "One supplied source says the deployment completed, while another says the rollout may still be in progress; no post-deploy health result is available.",
+        "deterministicValidation": {
+          "schemaValid": true,
+          "knownInvariantViolation": false
+        }
+      },
+      "expectedBranch": "review"
+    },
+    {
+      "id": "synthetic-tentative-completion-without-marker",
+      "evidenceClass": "synthetic",
+      "state": {
+        "recordType": "export_job",
+        "fields": {
+          "status": "processing",
+          "completedAt": null
+        },
+        "semanticSummary": "A note says the export may have completed, but no completion marker or final archive result is available yet.",
         "deterministicValidation": {
           "schemaValid": true,
           "knownInvariantViolation": false
