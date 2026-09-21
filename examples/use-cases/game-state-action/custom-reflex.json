@@ -40,7 +40,12 @@
         "resources": "high",
         "enemyPressure": "low",
         "currentPosition": "safe approach route",
-        "legalActions": ["advance", "defend", "retreat", "hold"]
+        "legalActions": [
+          "advance",
+          "defend",
+          "retreat",
+          "hold"
+        ]
       },
       "expectedBranch": "advance_candidate"
     },
@@ -48,12 +53,17 @@
       "id": "synthetic-defend",
       "evidenceClass": "synthetic",
       "state": {
-        "objective": "hold the secured checkpoint",
+        "objective": "prevent capture of the secured checkpoint",
         "health": "medium",
         "resources": "adequate",
-        "enemyPressure": "approaching",
+        "enemyPressure": "high and approaching",
         "currentPosition": "strong cover on the objective",
-        "legalActions": ["advance", "defend", "retreat", "hold"]
+        "legalActions": [
+          "advance",
+          "defend",
+          "retreat",
+          "hold"
+        ]
       },
       "expectedBranch": "defend_candidate"
     }
