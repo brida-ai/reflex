@@ -1,5 +1,7 @@
 # Brida Reflex
 
+[![skills.sh](https://skills.sh/b/brida-ai/reflex)](https://skills.sh/brida-ai/reflex)
+
 Open declarative schemas, official recipes and synthetic fixtures for Brida Reflex.
 
 Reflex is a programmable semantic decision capability for making small, typed decisions before more expensive reasoning or action. A Reflex result is a **recommendation**, not authority to perform a protected side effect.

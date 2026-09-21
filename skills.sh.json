@@ -1,0 +1,89 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Start here",
+      "description": "General intent-first Reflex implementation, discovery, design and verification.",
+      "skills": [
+        "brida-reflex"
+      ]
+    },
+    {
+      "title": "Agents & routing",
+      "description": "Decide when agents should work, how much effort they need, and what context deserves attention.",
+      "skills": [
+        "brida-reflex-agent-progress-gate",
+        "brida-reflex-model-effort-routing",
+        "brida-reflex-work-priority",
+        "brida-reflex-context-retention-gate",
+        "brida-reflex-memory-relevance-gate",
+        "brida-reflex-conversation-turn-state",
+        "brida-reflex-completion-evidence-gate"
+      ]
+    },
+    {
+      "title": "Browser, content & messages",
+      "description": "Bounded semantic decisions for browser actions, content, sponsorship, message risk and untrusted input.",
+      "skills": [
+        "brida-reflex-browser-action-risk",
+        "brida-reflex-semantic-content-blocking",
+        "brida-reflex-page-clutter-relevance",
+        "brida-reflex-sponsor-segment-detection",
+        "brida-reflex-content-policy-review",
+        "brida-reflex-content-quality-gate",
+        "brida-reflex-incoming-message-risk",
+        "brida-reflex-outbound-message-risk",
+        "brida-reflex-untrusted-input-risk"
+      ]
+    },
+    {
+      "title": "Software engineering",
+      "description": "Triage, classify and verify software changes, tests, failures, responses and qualitative rules.",
+      "skills": [
+        "brida-reflex-code-change-classification",
+        "brida-reflex-change-review-risk",
+        "brida-reflex-software-issue-triage",
+        "brida-reflex-test-relevance-gate",
+        "brida-reflex-execution-failure-classification",
+        "brida-reflex-semantic-response-health",
+        "brida-reflex-duplicate-report-match",
+        "brida-reflex-policy-change-impact",
+        "brida-reflex-semantic-rule-check"
+      ]
+    },
+    {
+      "title": "Retrieval, research & data",
+      "description": "Relevance, evidence, cache reuse, semantic matching, consistency and reusable data-quality signals.",
+      "skills": [
+        "brida-reflex-retrieval-relevance-gate",
+        "brida-reflex-research-claim-verification",
+        "brida-reflex-research-event-relevance",
+        "brida-reflex-semantic-cache-reuse-gate",
+        "brida-reflex-semantic-data-consistency",
+        "brida-reflex-semantic-record-match",
+        "brida-reflex-dataset-example-quality",
+        "brida-reflex-catalog-listing-signals"
+      ]
+    },
+    {
+      "title": "Business, support & documents",
+      "description": "Lead, support, marketplace, document and operational review decisions.",
+      "skills": [
+        "brida-reflex-customer-support-ticket-triage",
+        "brida-reflex-sales-lead-fit",
+        "brida-reflex-marketplace-job-fit",
+        "brida-reflex-document-extraction-route",
+        "brida-reflex-document-invoice-review",
+        "brida-reflex-incident-signal-triage"
+      ]
+    },
+    {
+      "title": "Interactive & simulation",
+      "description": "Small typed decisions inside bounded interactive or simulated state.",
+      "skills": [
+        "brida-reflex-game-state-action"
+      ]
+    }
+  ]
+}
