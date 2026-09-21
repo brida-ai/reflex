@@ -1,6 +1,6 @@
 ---
 name: brida-reflex-work-priority
-description: "Implement and verify the Brida Reflex Work priority reflex use case: run now, defer, or escalate a task from bounded scheduling context. Use when the user names work-priority, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview. Triggers include: task priority, work routing, run now or defer."
+description: "Implement and verify the Brida Reflex Work priority reflex use case: classify a bounded task as run now, defer, escalate for human attention, or review when scheduling evidence is insufficient. Use when the user names work-priority, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview. Triggers include: task priority, work routing, run now or defer."
 ---
 
 # Work priority reflex
