@@ -1,0 +1,84 @@
+{
+  "id": "semantic-content-blocking",
+  "version": "1",
+  "name": "Semantic content blocking",
+  "max_state_bytes": 12288,
+  "data_class": "non_sensitive",
+  "question_set_version": "semantic-content-blocking-questions@1",
+  "questions": {
+    "contentClass": {
+      "type": "choice",
+      "instructions": "Classify the supplied page/content candidate after deterministic blocklists and exact rules have already run. Judge only whether the candidate itself is ordinary content, materially promotional/advertising content, or ambiguous.",
+      "criteria": {
+        "ordinary": "Primary editorial, navigational, functional or user-requested content with no material advertising, sponsorship, affiliate or promotional purpose in the supplied evidence.",
+        "promotional": "The candidate materially promotes a product, service, sponsor, affiliate offer or paid placement, rather than serving as ordinary primary content.",
+        "ambiguous": "The candidate mixes ordinary and promotional signals, or the supplied context is insufficient to classify reliably."
+      }
+    }
+  },
+  "policy_version": "semantic-content-blocking-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "contentClass",
+    "branches": {
+      "ordinary": "keep_candidate",
+      "promotional": "hide_candidate",
+      "ambiguous": "review"
+    },
+    "minimumSelectedProbability": 0.78,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-editorial-paragraph",
+      "evidenceClass": "synthetic",
+      "state": {
+        "visibleText": "The release notes explain the new offline export format and migration steps.",
+        "elementRole": "article_paragraph",
+        "nearbyLabel": "Documentation",
+        "destinationClass": "same_site_documentation",
+        "pageContext": "product documentation article",
+        "deterministicSignals": {
+          "knownAdNetwork": false,
+          "exactAdSelector": false,
+          "userBlockedDomain": false
+        }
+      },
+      "expectedBranch": "keep_candidate"
+    },
+    {
+      "id": "synthetic-promotional-card",
+      "evidenceClass": "synthetic",
+      "state": {
+        "visibleText": "Upgrade your workflow with Example Cloud. Start a free trial today and save 30% this month.",
+        "elementRole": "sidebar_card",
+        "nearbyLabel": "Partner offer",
+        "destinationClass": "external_commercial_landing",
+        "pageContext": "news article sidebar",
+        "deterministicSignals": {
+          "knownAdNetwork": false,
+          "exactAdSelector": false,
+          "userBlockedDomain": false
+        }
+      },
+      "expectedBranch": "hide_candidate"
+    },
+    {
+      "id": "synthetic-ambiguous-recommendation",
+      "evidenceClass": "synthetic",
+      "state": {
+        "visibleText": "Recommended: Example Editor — a tool used by several contributors.",
+        "elementRole": "related_card",
+        "nearbyLabel": "Recommended",
+        "destinationClass": "external_product_page",
+        "pageContext": "community tutorial",
+        "deterministicSignals": {
+          "knownAdNetwork": false,
+          "exactAdSelector": false,
+          "userBlockedDomain": false
+        }
+      },
+      "expectedBranch": "review"
+    }
+  ]
+}
