@@ -1,6 +1,6 @@
 ---
 name: brida-reflex-sales-lead-fit
-description: "Implement and verify the Brida Reflex Sales lead fit use case: decide whether the supplied non-sensitive lead facts match a stated ICP. Use when the user names sales-lead-fit, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview."
+description: "Implement and verify the Brida Reflex Sales lead fit use case: decide whether supplied non-sensitive lead facts materially match an explicit ideal-customer profile, clearly do not match, or need review. Use when the user names sales-lead-fit, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview."
 ---
 
 # Sales lead fit
