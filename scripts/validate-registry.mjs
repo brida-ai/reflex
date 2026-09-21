@@ -1,4 +1,4 @@
-import { lstat, readFile, readdir } from 'node:fs/promises'
+import { lstat, open, readFile, readdir } from 'node:fs/promises'
 import { basename, join, resolve } from 'node:path'
 import { pathToFileURL, fileURLToPath } from 'node:url'
 
@@ -256,10 +256,18 @@ function recipeKey(name, version) {
 
 
 async function readBounded(path, maximumBytes, root) {
-  const info = await lstat(path)
-  assert(info.isFile() && !info.isSymbolicLink(), `${relative(path, root)}: expected a regular non-symlink file`)
-  assert(info.size <= maximumBytes, `${relative(path, root)}: file exceeds ${maximumBytes} bytes`)
-  return readFile(path, 'utf8')
+  const label = relative(path, root)
+  const handle = await open(path, 'r')
+  try {
+    const [info, pathInfo] = await Promise.all([handle.stat(), lstat(path)])
+    assert(info.isFile(), `${label}: expected a regular file`)
+    assert(pathInfo.isFile() && !pathInfo.isSymbolicLink(), `${label}: expected a regular non-symlink file`)
+    assert(info.dev === pathInfo.dev && info.ino === pathInfo.ino, `${label}: file changed during validation`)
+    assert(info.size <= maximumBytes, `${label}: file exceeds ${maximumBytes} bytes`)
+    return await handle.readFile({ encoding: 'utf8' })
+  } finally {
+    await handle.close()
+  }
 }
 
 function assertJsonDepth(value, label, depth = 0) {
