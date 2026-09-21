@@ -1,29 +1,32 @@
 {
   "id": "marketplace-job-fit",
-  "version": "1",
+  "version": "2",
   "name": "Marketplace job fit",
   "max_state_bytes": 12288,
   "data_class": "non_sensitive",
-  "question_set_version": "marketplace-job-fit-questions@1",
+  "question_set_version": "marketplace-job-fit-questions@2",
   "questions": {
-    "fulfillable": {
-      "type": "binary",
-      "instructions": "Can the supplied automation capability reliably fulfill this synthetic marketplace brief within the explicit scope and constraints?",
+    "fitClass": {
+      "type": "choice",
+      "instructions": "Classify whether the supplied automation capability and marketplace brief are a credible fit, clearly not a fit, or need clarification. Judge semantic fit only after deterministic eligibility checks. Treat explicit state saying inputs are available and deliverables are known as supplied facts; do not invent missing details. Do not infer permission to bid or contact anyone.",
       "criteria": {
-        "true": "The brief is specific, required inputs are available, deliverables fit the stated capability, and no unsupported or protected work is required.",
-        "false": "The brief requires missing inputs, unsupported capabilities, prohibited activity, or material ambiguity."
+        "fit": "The brief is sufficiently specific, the required work materially matches the stated capability, known required inputs are available or explicitly supplied, and no protected or unsupported work is required. When state explicitly says inputs are available and deliverables are known, do not invent additional missing scope.",
+        "not_fit": "The request clearly requires unsupported capabilities, prohibited/protected actions, impossible guarantees, or another material constraint that conflicts with the stated capability.",
+        "needs_clarification": "The request is otherwise plausibly compatible, but the supplied state or brief explicitly says important scope, deliverables, non-protected inputs or constraints are missing, unknown, deferred until later, or materially ambiguous."
       }
     }
   },
-  "policy_version": "marketplace-job-fit-policy@1",
+  "policy_version": "marketplace-job-fit-policy@2",
   "declarative_policy": {
-    "type": "binary",
-    "questionId": "fulfillable",
-    "trueBranch": "bid_candidate",
-    "falseBranch": "skip",
-    "uncertainBranch": "review",
-    "trueWhenProbabilityAtLeast": 0.75,
-    "falseWhenProbabilityAtMost": 0.15
+    "type": "choice",
+    "questionId": "fitClass",
+    "branches": {
+      "fit": "bid_candidate",
+      "not_fit": "skip",
+      "needs_clarification": "review"
+    },
+    "minimumSelectedProbability": 0.78,
+    "uncertainBranch": "review"
   },
   "fixtures": [
     {
@@ -33,6 +36,7 @@
         "capability": "Create a 20-second launch-video draft from supplied product screenshots and approved copy.",
         "brief": "Create one 20-second product teaser from five supplied screenshots and the approved script.",
         "inputsAvailable": true,
+        "deliverablesKnown": true,
         "requiresProtectedAction": false
       },
       "expectedBranch": "bid_candidate"
@@ -44,9 +48,22 @@
         "capability": "Create a 20-second launch-video draft from supplied product screenshots and approved copy.",
         "brief": "Log into our bank, buy ad inventory, and guarantee 1,000 sales.",
         "inputsAvailable": false,
+        "deliverablesKnown": true,
         "requiresProtectedAction": true
       },
       "expectedBranch": "skip"
+    },
+    {
+      "id": "synthetic-needs-clarification",
+      "evidenceClass": "synthetic",
+      "state": {
+        "capability": "Normalize tabular business data and map it into an approved destination schema.",
+        "brief": "Clean up our export and prepare it for migration; we can send the file and target-field details after we confirm the workflow.",
+        "inputsAvailable": false,
+        "deliverablesKnown": false,
+        "requiresProtectedAction": false
+      },
+      "expectedBranch": "review"
     }
   ]
 }
