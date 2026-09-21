@@ -1,0 +1,82 @@
+{
+  "id": "page-clutter-relevance",
+  "version": "1",
+  "name": "Page clutter relevance",
+  "max_state_bytes": 12288,
+  "data_class": "non_sensitive",
+  "question_set_version": "page-clutter-relevance-questions@1",
+  "questions": {
+    "utility": {
+      "type": "choice",
+      "instructions": "Classify the supplied page element only by how useful it is to the stated browsing or reading goal, after deterministic protected-element checks have already run.",
+      "criteria": {
+        "useful": "The element materially advances the stated goal or provides useful supporting context a reasonable user pursuing that goal would likely want to retain.",
+        "nonessential": "The element is clearly incidental, repetitive, distracting, or unrelated to the stated goal and can be considered for visual simplification.",
+        "ambiguous": "The element has mixed or context-dependent utility, or the supplied state is insufficient to decide reliably."
+      }
+    }
+  },
+  "policy_version": "page-clutter-relevance-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "utility",
+    "branches": {
+      "useful": "keep_candidate",
+      "nonessential": "hide_candidate",
+      "ambiguous": "review"
+    },
+    "minimumSelectedProbability": 0.78,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-primary-explanation",
+      "evidenceClass": "synthetic",
+      "state": {
+        "goal": "Read the technical explanation of why the migration failed.",
+        "visibleText": "The migration failed because the replica had not caught up before the new index was activated.",
+        "elementRole": "article_paragraph",
+        "relationToPrimaryContent": "inside_primary_article",
+        "deterministicSignals": {
+          "interactive": false,
+          "userPinned": false,
+          "protectedControl": false
+        }
+      },
+      "expectedBranch": "keep_candidate"
+    },
+    {
+      "id": "synthetic-unrelated-community-box",
+      "evidenceClass": "synthetic",
+      "state": {
+        "goal": "Read the technical explanation of why the migration failed.",
+        "visibleText": "Join our community challenge this week and share your workspace setup.",
+        "elementRole": "sidebar_box",
+        "relationToPrimaryContent": "adjacent_sidebar",
+        "deterministicSignals": {
+          "interactive": false,
+          "userPinned": false,
+          "protectedControl": false
+        }
+      },
+      "expectedBranch": "hide_candidate"
+    },
+    {
+      "id": "synthetic-unclear-related-card",
+      "evidenceClass": "synthetic",
+      "state": {
+        "goal": "Understand the migration failure and possible recovery steps.",
+        "visibleText": "Related resources",
+        "elementRole": "related_resources_card",
+        "relationToPrimaryContent": "after_article",
+        "deterministicSignals": {
+          "interactive": false,
+          "userPinned": false,
+          "protectedControl": false
+        },
+        "destinationClass": "unknown_destination"
+      },
+      "expectedBranch": "review"
+    }
+  ]
+}
