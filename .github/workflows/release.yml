@@ -38,12 +38,17 @@ jobs:
 
       - name: Bind release to approved main SHA
         shell: bash
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
         run: |
           set -euo pipefail
           ACTUAL="$(git rev-parse HEAD)"
-          EXPECTED="${{ inputs.expected_sha }}"
-          if [ "$ACTUAL" != "$EXPECTED" ]; then
-            echo "main moved: expected $EXPECTED, found $ACTUAL" >&2
+          if ! [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "expected_sha must be an exact lowercase Git commit SHA." >&2
+            exit 1
+          fi
+          if [ "$ACTUAL" != "$EXPECTED_SHA" ]; then
+            echo "main moved: expected $EXPECTED_SHA, found $ACTUAL" >&2
             exit 1
           fi
 
@@ -68,9 +73,11 @@ jobs:
       - name: Compute release from immutable tag history
         id: plan
         shell: bash
+        env:
+          RELEASE_IMPACT: ${{ inputs.impact }}
         run: |
           set -euo pipefail
-          node scripts/release/plan.mjs "${{ inputs.impact }}" | tee /tmp/release-plan.json
+          node scripts/release/plan.mjs "$RELEASE_IMPACT" | tee /tmp/release-plan.json
           SOURCE_SHA="$(git rev-parse HEAD)"
           VERSION="$(node -e "const fs=require('node:fs');const x=JSON.parse(fs.readFileSync('/tmp/release-plan.json','utf8').trim());process.stdout.write(x.version)")"
           TAG="v$VERSION"
@@ -88,46 +95,65 @@ jobs:
       contents: write
     env:
       GH_TOKEN: ${{ github.token }}
+      SOURCE_SHA: ${{ needs.verify.outputs.source_sha }}
+      TAG: ${{ needs.verify.outputs.tag }}
+      VERSION: ${{ needs.verify.outputs.version }}
     steps:
-      - name: Checkout exact verified source
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ needs.verify.outputs.source_sha }}
-          fetch-depth: 0
-          persist-credentials: true
-
-      - name: Verify release source identity
+      - name: Create or verify immutable annotated tag without source checkout
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${{ needs.verify.outputs.source_sha }}"
+          if ! [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Invalid source SHA." >&2
+            exit 1
+          fi
+          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid release tag: $TAG" >&2
+            exit 1
+          fi
 
-      - name: Create immutable annotated tag
-        shell: bash
-        run: |
-          set -euo pipefail
-          TAG="${{ needs.verify.outputs.tag }}"
-          SHA="$(git rev-parse HEAD)"
-          if git rev-parse "$TAG^{commit}" >/dev/null 2>&1; then
-            TAG_SHA="$(git rev-parse "$TAG^{commit}")"
-            if [ "$TAG_SHA" != "$SHA" ]; then
-              echo "Refusing to move existing tag $TAG from $TAG_SHA to $SHA" >&2
+          COMMIT_SHA="$(gh api "repos/$GITHUB_REPOSITORY/commits/$SOURCE_SHA" --jq '.sha')"
+          if [ "$COMMIT_SHA" != "$SOURCE_SHA" ]; then
+            echo "Release source commit identity mismatch." >&2
+            exit 1
+          fi
+
+          if REF_JSON="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$TAG" 2>/dev/null)"; then
+            OBJECT_TYPE="$(printf '%s' "$REF_JSON" | jq -r '.object.type')"
+            OBJECT_SHA="$(printf '%s' "$REF_JSON" | jq -r '.object.sha')"
+            if [ "$OBJECT_TYPE" != "tag" ]; then
+              echo "Existing $TAG is not an annotated tag." >&2
+              exit 1
+            fi
+            TAG_JSON="$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$OBJECT_SHA")"
+            TAGGED_TYPE="$(printf '%s' "$TAG_JSON" | jq -r '.object.type')"
+            TAGGED_SHA="$(printf '%s' "$TAG_JSON" | jq -r '.object.sha')"
+            if [ "$TAGGED_TYPE" != "commit" ] || [ "$TAGGED_SHA" != "$SOURCE_SHA" ]; then
+              echo "Refusing mismatched existing tag $TAG." >&2
               exit 1
             fi
           else
-            git config user.name "brida-release"
-            git config user.email "release@brida.ai"
-            git tag -a "$TAG" -m "$TAG"
-            git push origin "refs/tags/$TAG"
+            TAG_OBJECT_SHA="$(gh api -X POST "repos/$GITHUB_REPOSITORY/git/tags" \
+              -f tag="$TAG" \
+              -f message="$TAG" \
+              -f object="$SOURCE_SHA" \
+              -f type=commit \
+              --jq '.sha')"
+            gh api -X POST "repos/$GITHUB_REPOSITORY/git/refs" \
+              -f ref="refs/tags/$TAG" \
+              -f sha="$TAG_OBJECT_SHA" >/dev/null
           fi
 
       - name: Create or verify GitHub Release
         shell: bash
         run: |
           set -euo pipefail
-          TAG="${{ needs.verify.outputs.tag }}"
-          if gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             echo "GitHub Release $TAG already exists; leaving it immutable."
           else
-            gh release create "$TAG" --repo "${{ github.repository }}"               --verify-tag --generate-notes --title "Brida Reflex Registry ${{ needs.verify.outputs.version }}"
+            gh release create "$TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --verify-tag \
+              --generate-notes \
+              --title "Brida Reflex Registry $VERSION"
           fi
