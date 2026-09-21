@@ -1,6 +1,6 @@
 ---
 name: brida-reflex-document-invoice-review
-description: "Implement and verify the Brida Reflex Invoice review gate use case: decide whether a normalized, synthetic invoice summary needs a human review. Use when the user names document-invoice-review, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview."
+description: "Implement and verify the Brida Reflex Invoice review gate use case: decide whether a normalized synthetic invoice summary should continue through the normal accounting workflow or route to review. Use when the user names document-invoice-review, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview."
 ---
 
 # Invoice review gate
