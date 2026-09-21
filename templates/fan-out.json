@@ -1,0 +1,66 @@
+{
+  "id": "replace-fan-out-id",
+  "version": "1",
+  "name": "Replace fan-out name",
+  "max_state_bytes": 12288,
+  "data_class": "non_sensitive",
+  "question_set_version": "replace-fan-out-questions@1",
+  "questions": {
+    "route": {
+      "type": "choice",
+      "instructions": "Choose the primary bounded handling category.",
+      "criteria": {
+        "first": "Describe the first handling category.",
+        "second": "Describe the second handling category.",
+        "other": "None of the supported handling categories clearly fits."
+      }
+    },
+    "hasRiskSignal": {
+      "type": "binary",
+      "instructions": "Does the same state contain the bounded semantic risk signal described by the application?",
+      "criteria": {
+        "true": "The specified semantic risk signal is materially present.",
+        "false": "The specified semantic risk signal is not materially present."
+      }
+    },
+    "severity": {
+      "type": "score",
+      "instructions": "Score the same state against this small severity rubric.",
+      "criteria": [
+        "Low",
+        "Moderate",
+        "High"
+      ]
+    }
+  },
+  "policy_version": "replace-fan-out-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "route",
+    "branches": {
+      "first": "first_candidate",
+      "second": "second_candidate",
+      "other": "review"
+    },
+    "minimumSelectedProbability": 0.75,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-first",
+      "evidenceClass": "synthetic",
+      "state": {
+        "example": "Replace with synthetic state for the first primary route."
+      },
+      "expectedBranch": "first_candidate"
+    },
+    {
+      "id": "synthetic-other",
+      "evidenceClass": "synthetic",
+      "state": {
+        "example": "Replace with synthetic state outside the supported primary routes."
+      },
+      "expectedBranch": "review"
+    }
+  ]
+}
