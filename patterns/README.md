@@ -38,5 +38,11 @@ These show how larger systems can use Reflex without pretending the whole workfl
 - [Document processing](document-processing.md)
 - [Retrieval and RAG](retrieval-rag.md)
 - [Agent runtime](agent-runtime.md)
+- [Memory and context](memory-context.md)
+- [Dataset curation and evaluation](dataset-curation-evaluation.md)
+- [Software change review](software-change-review.md)
+- [Operations and incident response](operations-incident-response.md)
+- [Sales, support and CRM](sales-support-crm.md)
+- [Content, advertising and publishing](content-publishing.md)
 
 The public Developer Preview examples use `non_sensitive` synthetic state. A pattern does not expand the data class or authority of a recipe or Custom Reflex.
