@@ -1,0 +1,111 @@
+{
+  "id": "context-retention-gate",
+  "version": "1",
+  "name": "Context retention gate",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "context-retention-gate-questions@1",
+  "questions": {
+    "retention": {
+      "type": "choice",
+      "instructions": "Classify how one already-authorized context item should be retained for the supplied bounded task. System/policy/pinned/secret protections have already been applied by deterministic code.",
+      "criteria": {
+        "keep_verbatim": "The exact wording, values, error details, commitments, identifiers, or other item-specific details are likely still useful and should remain directly available.",
+        "compactable": "The item's semantic substance remains useful but exact wording and low-level detail are unlikely to matter; a host-owned summary/compaction could preserve what is needed.",
+        "low_value": "The item is clearly superseded, transient, repetitive, or unrelated enough that retaining it adds little value to the bounded task.",
+        "ambiguous": "The retention value or need for exact detail cannot be determined reliably from the supplied evidence."
+      }
+    }
+  },
+  "policy_version": "context-retention-gate-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "retention",
+    "branches": {
+      "keep_verbatim": "keep_candidate",
+      "compactable": "compact_candidate",
+      "low_value": "drop_candidate",
+      "ambiguous": "review"
+    },
+    "minimumSelectedProbability": 0.82,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-exact-validation-error",
+      "evidenceClass": "synthetic",
+      "state": {
+        "task": "Fix a failing API request and verify the corrected payload.",
+        "item": {
+          "kind": "tool_result",
+          "summary": "Request failed with status 422: field routes[2].destination must be a valid URL.",
+          "ageClass": "recent"
+        },
+        "deterministicSignals": {
+          "pinned": false,
+          "systemOrPolicy": false,
+          "containsSecret": false,
+          "alreadyPersistedElsewhere": false
+        }
+      },
+      "expectedBranch": "keep_candidate"
+    },
+    {
+      "id": "synthetic-completed-investigation-summary",
+      "evidenceClass": "synthetic",
+      "state": {
+        "task": "Prepare the final fix after diagnosing a flaky cache invalidation bug.",
+        "item": {
+          "kind": "assistant_analysis_summary",
+          "summary": "Earlier investigation ruled out database replication and isolated the issue to cache invalidation after tenant configuration changes; several exploratory commands and intermediate hypotheses were included.",
+          "ageClass": "recent"
+        },
+        "deterministicSignals": {
+          "pinned": false,
+          "systemOrPolicy": false,
+          "containsSecret": false,
+          "alreadyPersistedElsewhere": false
+        }
+      },
+      "expectedBranch": "compact_candidate"
+    },
+    {
+      "id": "synthetic-superseded-progress-note",
+      "evidenceClass": "synthetic",
+      "state": {
+        "task": "Fix a failing API request and verify the corrected payload.",
+        "item": {
+          "kind": "assistant_progress",
+          "summary": "Dependencies are still installing. A later item confirms installation completed successfully and contains the actual validation result.",
+          "ageClass": "old"
+        },
+        "deterministicSignals": {
+          "pinned": false,
+          "systemOrPolicy": false,
+          "containsSecret": false,
+          "alreadyPersistedElsewhere": true
+        }
+      },
+      "expectedBranch": "drop_candidate"
+    },
+    {
+      "id": "synthetic-unclear-design-note",
+      "evidenceClass": "synthetic",
+      "state": {
+        "task": "Finish an implementation whose remaining acceptance criteria are not fully specified.",
+        "item": {
+          "kind": "design_note",
+          "summary": "Consider keeping the legacy behavior for compatibility; no decision, owner, or affected version is recorded.",
+          "ageClass": "old"
+        },
+        "deterministicSignals": {
+          "pinned": false,
+          "systemOrPolicy": false,
+          "containsSecret": false,
+          "alreadyPersistedElsewhere": false
+        }
+      },
+      "expectedBranch": "review"
+    }
+  ]
+}
