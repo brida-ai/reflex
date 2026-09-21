@@ -1,41 +1,56 @@
 {
   "id": "work-priority",
-  "version": "1",
+  "version": "2",
   "name": "Work priority reflex",
   "max_state_bytes": 8192,
   "data_class": "non_sensitive",
-  "question_set_version": "work-priority-questions@1",
+  "question_set_version": "work-priority-questions@2",
   "questions": {
     "priority": {
       "type": "choice",
-      "instructions": "Choose the appropriate scheduling class for this task from urgency, deadline, blocker status and stated business impact.",
+      "instructions": "Choose the scheduling class from urgency, deadline, blocker status and stated impact. Treat materially blocked or high-consequence work as escalation rather than ordinary run-now work; use unclear when the evidence is insufficient.",
       "criteria": {
-        "now": "Time-sensitive work that should enter the active queue now.",
-        "later": "Useful work with no immediate deadline or blocker.",
-        "escalate": "Overdue or materially blocked work whose consequence warrants human attention."
+        "now": "Time-sensitive and actionable work that should enter the active queue now, with no supplied blocker or consequence requiring human escalation.",
+        "later": "Useful work with no immediate deadline, blocker or material consequence requiring active attention.",
+        "escalate": "Overdue or materially blocked work, or work whose stated consequence warrants human attention before or alongside scheduling.",
+        "unclear": "The scheduling evidence is mixed, incomplete or too ambiguous to choose now, later or escalate reliably."
       }
     }
   },
-  "policy_version": "work-priority-policy@1",
+  "policy_version": "work-priority-policy@2",
   "declarative_policy": {
     "type": "choice",
     "questionId": "priority",
     "branches": {
       "now": "run_now",
       "later": "defer",
-      "escalate": "human_attention"
+      "escalate": "human_attention",
+      "unclear": "review"
     },
     "minimumSelectedProbability": 0.78,
-    "uncertainBranch": "human_attention"
+    "uncertainBranch": "review"
   },
   "fixtures": [
+    {
+      "id": "synthetic-run-now",
+      "evidenceClass": "synthetic",
+      "state": {
+        "task": "Renew an already-approved staging certificate before its scheduled expiry.",
+        "deadline": "within_2_hours",
+        "materiallyBlocked": false,
+        "humanDecisionRequired": false,
+        "impact": "staging verification will stop after expiry"
+      },
+      "expectedBranch": "run_now"
+    },
     {
       "id": "synthetic-later",
       "evidenceClass": "synthetic",
       "state": {
         "task": "Refresh optional demo screenshots",
         "deadline": "none",
-        "blocksRelease": false,
+        "materiallyBlocked": false,
+        "humanDecisionRequired": false,
         "impact": "cosmetic improvement"
       },
       "expectedBranch": "defer"
@@ -46,10 +61,23 @@
       "state": {
         "task": "Restore failed signup verification",
         "deadline": "overdue",
-        "blocksRelease": true,
+        "materiallyBlocked": true,
+        "humanDecisionRequired": true,
         "impact": "new users cannot complete signup"
       },
       "expectedBranch": "human_attention"
+    },
+    {
+      "id": "synthetic-unclear",
+      "evidenceClass": "synthetic",
+      "state": {
+        "task": "Prepare launch follow-up work soon",
+        "deadline": "unspecified",
+        "materiallyBlocked": false,
+        "humanDecisionRequired": false,
+        "impact": "not supplied"
+      },
+      "expectedBranch": "review"
     }
   ]
 }
