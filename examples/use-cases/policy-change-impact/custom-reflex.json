@@ -1,0 +1,87 @@
+{
+  "id": "policy-change-impact",
+  "version": "1",
+  "name": "Policy change impact",
+  "max_state_bytes": 16384,
+  "data_class": "non_sensitive",
+  "question_set_version": "policy-change-impact-questions@1",
+  "questions": {
+    "impact": {
+      "type": "choice",
+      "instructions": "Classify whether the supplied policy change materially affects the specified component responsibilities, after the listed exact scope checks.",
+      "criteria": {
+        "unaffected": "The change concerns responsibilities or data outside the supplied component's bounded scope.",
+        "affected": "The change directly changes a responsibility, constraint, retention rule, control or behavior owned by the supplied component.",
+        "unclear": "The relationship between the change and component scope is incomplete, indirect or ambiguous."
+      }
+    }
+  },
+  "policy_version": "policy-change-impact-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "impact",
+    "branches": {
+      "unaffected": "no_change_candidate",
+      "affected": "impact_review",
+      "unclear": "review"
+    },
+    "minimumSelectedProbability": 0.8,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-unaffected-renderer",
+      "evidenceClass": "synthetic",
+      "state": {
+        "policyChange": "Stored export files must now be deleted after seven days instead of thirty.",
+        "component": "Static public documentation renderer",
+        "componentResponsibilities": [
+          "render public documentation pages from repository text",
+          "serve versioned static assets",
+          "does not store, delete, retain, or control user export files or export lifecycle metadata"
+        ],
+        "deterministicChecks": {
+          "explicitScopeExclusion": false,
+          "policyVersionCurrent": true
+        }
+      },
+      "expectedBranch": "no_change_candidate"
+    },
+    {
+      "id": "synthetic-affected-export-service",
+      "evidenceClass": "synthetic",
+      "state": {
+        "policyChange": "Stored export files must now be deleted after seven days instead of thirty.",
+        "component": "User export storage service",
+        "componentResponsibilities": [
+          "store generated export files",
+          "enforce export retention",
+          "delete expired export files"
+        ],
+        "deterministicChecks": {
+          "explicitScopeExclusion": false,
+          "policyVersionCurrent": true
+        }
+      },
+      "expectedBranch": "impact_review"
+    },
+    {
+      "id": "synthetic-ambiguous-export-ui",
+      "evidenceClass": "synthetic",
+      "state": {
+        "policyChange": "Systems responsible for storing or deleting export files must record a deletion reason.",
+        "component": "Export lifecycle dashboard",
+        "componentResponsibilities": [
+          "display export status",
+          "allow an authorized user to request deletion",
+          "retention ownership is not documented in the supplied scope"
+        ],
+        "deterministicChecks": {
+          "explicitScopeExclusion": false,
+          "policyVersionCurrent": true
+        }
+      },
+      "expectedBranch": "review"
+    }
+  ]
+}
