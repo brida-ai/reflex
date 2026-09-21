@@ -1,7 +1,7 @@
 # Semantic data consistency playbook
 
 Canonical use-case ID: `semantic-data-consistency`
-Version: `1`
+Version: `2`
 Question type: `choice`
 Data class: `non_sensitive`
 
@@ -15,7 +15,7 @@ judge whether a structured record is semantically consistent after exact schema 
 
 ## Primary semantic question
 
-Classify whether the supplied normalized record is semantically consistent after the listed deterministic validations have already passed.
+Classify whether the supplied normalized record is semantically consistent after exact schema and invariant checks. Use only supplied evidence: do not infer completion, health, approval or other missing state. If sources are tentative, materially mixed, or required semantic evidence is absent and structured fields do not resolve it, select unclear.
 
 ## Declared branches
 
@@ -29,7 +29,7 @@ Classify whether the supplied normalized record is semantically consistent after
 
 **Decision:** judge whether a structured record is semantically consistent after exact schema and invariant checks have already passed.
 
-Run deterministic validation first: parsing, required fields, types, ranges, enums, identifiers, arithmetic, timestamps and known cross-field invariants remain ordinary code. Reflex handles only contradictions that require interpreting the meaning of supplied text or labels.
+Run deterministic validation first: parsing, required fields, types, ranges, enums, identifiers, arithmetic, timestamps and known cross-field invariants remain ordinary code. Reflex handles only contradictions or evidence sufficiency questions that require interpreting the meaning of supplied text or labels. Do not infer missing completion, health or approval evidence.
 
 ## State
 
@@ -42,9 +42,9 @@ Supply non-sensitive bounded record context, for example:
 
 ## Branches
 
-- `continue_candidate` — the supplied semantic fields are materially consistent.
+- `continue_candidate` — the supplied evidence supports one materially coherent state without unresolved tentative or conflicting claims.
 - `exception_review` — the supplied fields materially contradict one another.
-- `review` — the state is too sparse or ambiguous to judge reliably.
+- `review` — evidence is materially sparse, tentative or mixed and the structured fields do not resolve it.
 
 ## Authority boundary
 

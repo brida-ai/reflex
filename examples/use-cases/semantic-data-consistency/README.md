@@ -2,7 +2,7 @@
 
 **Decision:** judge whether a structured record is semantically consistent after exact schema and invariant checks have already passed.
 
-Run deterministic validation first: parsing, required fields, types, ranges, enums, identifiers, arithmetic, timestamps and known cross-field invariants remain ordinary code. Reflex handles only contradictions that require interpreting the meaning of supplied text or labels.
+Run deterministic validation first: parsing, required fields, types, ranges, enums, identifiers, arithmetic, timestamps and known cross-field invariants remain ordinary code. Reflex handles only contradictions or evidence sufficiency questions that require interpreting the meaning of supplied text or labels. Do not infer missing completion, health or approval evidence.
 
 ## State
 
@@ -15,9 +15,9 @@ Supply non-sensitive bounded record context, for example:
 
 ## Branches
 
-- `continue_candidate` — the supplied semantic fields are materially consistent.
+- `continue_candidate` — the supplied evidence supports one materially coherent state without unresolved tentative or conflicting claims.
 - `exception_review` — the supplied fields materially contradict one another.
-- `review` — the state is too sparse or ambiguous to judge reliably.
+- `review` — evidence is materially sparse, tentative or mixed and the structured fields do not resolve it.
 
 ## Authority boundary
 
