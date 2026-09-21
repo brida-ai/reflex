@@ -22,18 +22,52 @@ export function validateCandidateState(state) {
   if (state === null || typeof state !== 'object' || Array.isArray(state)) {
     throw new TypeError('state must be an object')
   }
+
+  const allowedKeys = new Set([
+    'visibleText',
+    'elementRole',
+    'nearbyLabel',
+    'destinationClass',
+    'pageContext',
+    'deterministicSignals',
+  ])
+  for (const key of Object.keys(state)) {
+    if (!allowedKeys.has(key)) throw new TypeError('unexpected state field: ' + key)
+  }
+
   const encoded = Buffer.from(JSON.stringify(state))
   if (encoded.byteLength === 0 || encoded.byteLength > 12_288) {
     throw new TypeError('state is outside the Custom Reflex byte bound')
   }
 
-  for (const key of ['visibleText', 'elementRole', 'nearbyLabel', 'destinationClass', 'pageContext']) {
+  const boundedStrings = {
+    visibleText: 700,
+    elementRole: 80,
+    nearbyLabel: 160,
+    destinationClass: 80,
+    pageContext: 120,
+  }
+  for (const [key, maxLength] of Object.entries(boundedStrings)) {
     const value = state[key]
-    if (value !== undefined && typeof value !== 'string') throw new TypeError(key + ' must be a string')
+    if (value !== undefined && (typeof value !== 'string' || value.length > maxLength)) {
+      throw new TypeError(key + ' is invalid')
+    }
+  }
+  if (typeof state.visibleText !== 'string' || state.visibleText.length === 0) {
+    throw new TypeError('visibleText is invalid')
   }
 
-  if (typeof state.visibleText !== 'string' || state.visibleText.length === 0 || state.visibleText.length > 700) {
-    throw new TypeError('visibleText is invalid')
+  const signals = state.deterministicSignals
+  if (signals !== undefined) {
+    if (signals === null || typeof signals !== 'object' || Array.isArray(signals)) {
+      throw new TypeError('deterministicSignals must be an object')
+    }
+    const allowedSignals = new Set(['knownAdNetwork', 'exactAdSelector', 'userBlockedDomain'])
+    for (const [key, value] of Object.entries(signals)) {
+      if (!allowedSignals.has(key) || typeof value !== 'boolean') {
+        throw new TypeError('deterministicSignals is invalid')
+      }
+    }
   }
 
   return state
