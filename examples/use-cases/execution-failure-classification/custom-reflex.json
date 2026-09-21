@@ -1,0 +1,139 @@
+{
+  "id": "execution-failure-classification",
+  "version": "1",
+  "name": "Execution failure classification",
+  "max_state_bytes": 12288,
+  "data_class": "non_sensitive",
+  "question_set_version": "execution-failure-classification-questions@1",
+  "questions": {
+    "failureClass": {
+      "type": "choice",
+      "instructions": "Classify the semantic failure represented by the supplied bounded execution output. Exact typed error codes and deterministic retry/authorization policy remain host-owned.",
+      "criteria": {
+        "no_failure": "The output materially indicates normal completion or contains no meaningful failure signal.",
+        "transient": "The failure appears temporary or retry-like, such as a short-lived network, upstream availability or connection interruption.",
+        "environment": "The failure appears caused by runtime, dependency, configuration, resource or local environment state rather than a defect in intended program logic.",
+        "code_bug": "The failure materially indicates an implementation defect, exception, invariant violation or incorrect program behavior.",
+        "permission": "The failure materially indicates denied authorization, access, filesystem permission, service permission or policy refusal.",
+        "invalid_input": "The operation failed because required arguments, invocation shape, user input or supplied parameters are invalid or missing.",
+        "unclear": "The supplied evidence is too sparse, mixed or ambiguous to assign one failure class reliably."
+      }
+    }
+  },
+  "policy_version": "execution-failure-classification-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "failureClass",
+    "branches": {
+      "no_failure": "no_failure_candidate",
+      "transient": "transient_candidate",
+      "environment": "environment_candidate",
+      "code_bug": "code_candidate",
+      "permission": "permission_candidate",
+      "invalid_input": "input_candidate",
+      "unclear": "review"
+    },
+    "minimumSelectedProbability": 0.78,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-successful-test-run",
+      "evidenceClass": "synthetic",
+      "state": {
+        "operationClass": "test_runner",
+        "outputSummary": "42 tests passed. 0 failed.",
+        "deterministicSignals": {
+          "exitCode": 0,
+          "typedErrorAvailable": false,
+          "exactFailureRuleMatched": false
+        }
+      },
+      "expectedBranch": "no_failure_candidate"
+    },
+    {
+      "id": "synthetic-network-reset",
+      "evidenceClass": "synthetic",
+      "state": {
+        "operationClass": "package_fetch",
+        "outputSummary": "Request failed while downloading package metadata: connection reset by peer. Retry later.",
+        "deterministicSignals": {
+          "exitCode": 1,
+          "typedErrorAvailable": false,
+          "exactFailureRuleMatched": false
+        }
+      },
+      "expectedBranch": "transient_candidate"
+    },
+    {
+      "id": "synthetic-port-in-use",
+      "evidenceClass": "synthetic",
+      "state": {
+        "operationClass": "local_server_start",
+        "outputSummary": "Unable to listen on port 3000 because the address is already in use by another local process.",
+        "deterministicSignals": {
+          "exitCode": 1,
+          "typedErrorAvailable": false,
+          "exactFailureRuleMatched": false
+        }
+      },
+      "expectedBranch": "environment_candidate"
+    },
+    {
+      "id": "synthetic-code-exception",
+      "evidenceClass": "synthetic",
+      "state": {
+        "operationClass": "application_test",
+        "outputSummary": "TypeError: cannot read property id of undefined in the request normalization function during the test.",
+        "deterministicSignals": {
+          "exitCode": 1,
+          "typedErrorAvailable": false,
+          "exactFailureRuleMatched": false
+        }
+      },
+      "expectedBranch": "code_candidate"
+    },
+    {
+      "id": "synthetic-permission-denied",
+      "evidenceClass": "synthetic",
+      "state": {
+        "operationClass": "file_write",
+        "outputSummary": "Permission denied while writing the requested output file to the protected directory.",
+        "deterministicSignals": {
+          "exitCode": 1,
+          "typedErrorAvailable": false,
+          "exactFailureRuleMatched": false
+        }
+      },
+      "expectedBranch": "permission_candidate"
+    },
+    {
+      "id": "synthetic-invalid-argument",
+      "evidenceClass": "synthetic",
+      "state": {
+        "operationClass": "cli_invocation",
+        "outputSummary": "Invalid value for --format: expected one of json or text, received csv.",
+        "deterministicSignals": {
+          "exitCode": 2,
+          "typedErrorAvailable": false,
+          "exactFailureRuleMatched": false
+        }
+      },
+      "expectedBranch": "input_candidate"
+    },
+    {
+      "id": "synthetic-opaque-failure",
+      "evidenceClass": "synthetic",
+      "state": {
+        "operationClass": "generic_task",
+        "outputSummary": "Operation failed.",
+        "deterministicSignals": {
+          "exitCode": 1,
+          "typedErrorAvailable": false,
+          "exactFailureRuleMatched": false
+        }
+      },
+      "expectedBranch": "review"
+    }
+  ]
+}
