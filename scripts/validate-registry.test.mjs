@@ -27,7 +27,7 @@ async function withSandbox(run) {
 
 test('validates the current public registry', async () => {
   const result = await validateRegistry(sourceRoot)
-  assert.deepEqual(result, { recipeVersions: 5, fixtureSets: 5, examples: 1, customDraftExamples: 43 })
+  assert.deepEqual(result, { recipeVersions: 5, fixtureSets: 5, examples: 1, customDraftExamples: 44 })
 })
 
 test('rejects a Custom Reflex fixture branch that its policy cannot produce', async () => {

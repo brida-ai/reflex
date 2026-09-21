@@ -1,0 +1,115 @@
+{
+  "id": "conversation-turn-state",
+  "version": "1",
+  "name": "Conversation turn state",
+  "max_state_bytes": 12288,
+  "data_class": "non_sensitive",
+  "question_set_version": "conversation-turn-state-questions@1",
+  "questions": {
+    "turnState": {
+      "type": "choice",
+      "instructions": "Classify the semantic interaction state of the supplied current transcript. Use the assistant state and timing metadata only as context; deterministic timing/freshness policy remains host-owned.",
+      "criteria": {
+        "incomplete": "The utterance is materially unfinished, trails into a missing object/detail, or otherwise indicates the speaker is still formulating the request.",
+        "complete_request": "The utterance expresses a semantically complete request, question or statement that the host could consider responding to now.",
+        "barge_in": "The assistant is currently speaking and the user is materially interrupting, correcting, stopping or cancelling the assistant rather than merely giving a neutral backchannel.",
+        "ambiguous": "The supplied words and context do not reliably establish whether to continue listening, respond, or treat the speech as an interruption."
+      }
+    },
+    "turnComplete": {
+      "type": "binary",
+      "instructions": "Does the supplied transcript form a semantically complete turn that could be responded to without guessing a missing object or essential detail?",
+      "criteria": {
+        "true": "The speaker has expressed a complete request, question or statement.",
+        "false": "The utterance is materially unfinished or still needs an essential continuation."
+      }
+    },
+    "bargeIn": {
+      "type": "binary",
+      "instructions": "If the assistant is speaking, is the user's utterance an intentional interruption, correction, stop or cancel signal rather than a neutral acknowledgement?",
+      "criteria": {
+        "true": "The user is intentionally interrupting/correcting/stopping the assistant.",
+        "false": "The assistant is not speaking, or the user is not materially interrupting it."
+      }
+    }
+  },
+  "policy_version": "conversation-turn-state-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "turnState",
+    "branches": {
+      "incomplete": "continue_listening",
+      "complete_request": "respond_candidate",
+      "barge_in": "barge_in_candidate",
+      "ambiguous": "review"
+    },
+    "minimumSelectedProbability": 0.78,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-incomplete-timer",
+      "evidenceClass": "synthetic",
+      "state": {
+        "transcriptSoFar": "Set a timer for",
+        "msSinceLastWord": 220,
+        "assistantState": "listening",
+        "assistantSpeechSummary": "",
+        "deterministicSignals": {
+          "transcriptSequenceCurrent": true,
+          "minimumPauseSatisfied": false,
+          "silenceFallbackReached": false
+        }
+      },
+      "expectedBranch": "continue_listening"
+    },
+    {
+      "id": "synthetic-complete-weather-question",
+      "evidenceClass": "synthetic",
+      "state": {
+        "transcriptSoFar": "What will the weather be tomorrow morning?",
+        "msSinceLastWord": 420,
+        "assistantState": "listening",
+        "assistantSpeechSummary": "",
+        "deterministicSignals": {
+          "transcriptSequenceCurrent": true,
+          "minimumPauseSatisfied": true,
+          "silenceFallbackReached": false
+        }
+      },
+      "expectedBranch": "respond_candidate"
+    },
+    {
+      "id": "synthetic-explicit-interruption",
+      "evidenceClass": "synthetic",
+      "state": {
+        "transcriptSoFar": "Stop, that is not what I asked.",
+        "msSinceLastWord": 180,
+        "assistantState": "speaking",
+        "assistantSpeechSummary": "The assistant is explaining the previous result.",
+        "deterministicSignals": {
+          "transcriptSequenceCurrent": true,
+          "minimumPauseSatisfied": false,
+          "silenceFallbackReached": false
+        }
+      },
+      "expectedBranch": "barge_in_candidate"
+    },
+    {
+      "id": "synthetic-ambiguous-backchannel",
+      "evidenceClass": "synthetic",
+      "state": {
+        "transcriptSoFar": "Right...",
+        "msSinceLastWord": 360,
+        "assistantState": "speaking",
+        "assistantSpeechSummary": "The assistant is still explaining a multi-step answer.",
+        "deterministicSignals": {
+          "transcriptSequenceCurrent": true,
+          "minimumPauseSatisfied": true,
+          "silenceFallbackReached": false
+        }
+      },
+      "expectedBranch": "review"
+    }
+  ]
+}
