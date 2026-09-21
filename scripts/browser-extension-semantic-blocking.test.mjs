@@ -7,23 +7,33 @@ import {
   isAllowedExtensionOrigin,
   normalizeBranch,
   validateCandidateState,
+  validateExtensionOrigin,
 } from '../examples/integrations/browser-extension-semantic-blocking/companion/server.mjs'
 
-test('semantic content extension manifest does not request Brida origins or credentials', () => {
+const EXTENSION_ORIGIN = 'chrome-extension://abcdefghijklmnopabcdefghijklmnop'
+
+test('semantic content extension is user initiated and exposes no Brida credential', () => {
   const manifest = JSON.parse(fs.readFileSync(
     new URL('../examples/integrations/browser-extension-semantic-blocking/extension/manifest.json', import.meta.url),
     'utf8',
   ))
 
+  assert.deepEqual(manifest.permissions, ['activeTab', 'scripting'])
   assert.deepEqual(manifest.host_permissions, ['http://127.0.0.1:8787/*'])
+  assert.equal(manifest.content_scripts, undefined)
   assert.equal(JSON.stringify(manifest).includes('api.brida.ai'), false)
   assert.equal(JSON.stringify(manifest).includes('BRIDA_API_KEY'), false)
 })
 
-test('loopback companion accepts only Chrome extension origins', () => {
-  assert.equal(isAllowedExtensionOrigin('chrome-extension://abcdefghijklmnopabcdefghijklmnop'), true)
-  assert.equal(isAllowedExtensionOrigin('https://example.com'), false)
-  assert.equal(isAllowedExtensionOrigin(undefined), false)
+test('loopback companion is bound to one configured Chrome extension origin', () => {
+  assert.equal(validateExtensionOrigin(EXTENSION_ORIGIN), EXTENSION_ORIGIN)
+  assert.throws(() => validateExtensionOrigin('https://example.com'))
+  assert.equal(isAllowedExtensionOrigin(EXTENSION_ORIGIN, EXTENSION_ORIGIN), true)
+  assert.equal(
+    isAllowedExtensionOrigin('chrome-extension://ponmlkjihgfedcbaponmlkjihgfedcba', EXTENSION_ORIGIN),
+    false,
+  )
+  assert.equal(isAllowedExtensionOrigin('https://example.com', EXTENSION_ORIGIN), false)
 })
 
 test('candidate state is bounded before a Reflex request', () => {

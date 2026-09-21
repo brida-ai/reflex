@@ -1,4 +1,7 @@
 (() => {
+  if (globalThis.__bridaReflexSemanticBlockingDemoRunning) return
+  globalThis.__bridaReflexSemanticBlockingDemoRunning = true
+
   const MAX_CANDIDATES = 20
   const MAX_TEXT = 700
   const HARD_HIDE_SELECTORS = [

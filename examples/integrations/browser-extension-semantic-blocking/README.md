@@ -20,30 +20,33 @@ A Reflex branch is recommendation-only. The extension decides whether to hide a 
 
 ## Architecture
 
-`page DOM -> deterministic filters -> semantic candidate -> extension service worker -> loopback companion -> Brida Reflex -> branch -> DOM fingerprint recheck -> optional hide`
+`user click -> activeTab -> page DOM -> deterministic filters -> semantic candidate -> extension service worker -> loopback companion -> Brida Reflex -> branch -> DOM fingerprint recheck -> optional hide`
 
-The extension never stores or receives `BRIDA_API_KEY`. The companion process is trusted server-side code and binds only to `127.0.0.1`.
+The extension never stores or receives `BRIDA_API_KEY`. The companion process is trusted server-side code, binds only to `127.0.0.1`, and accepts requests only from one explicitly configured Chrome extension origin.
+
+The demo is deliberately user initiated. It does not register a content script across every HTTP/HTTPS page, which avoids silently sending arbitrary browsing content into a `non_sensitive` Preview workflow.
 
 ## Run the local demo
 
 1. Create and activate an Organization Custom Reflex from `examples/use-cases/semantic-content-blocking/custom-reflex.json`.
-2. Start the companion from this directory:
+2. Open `chrome://extensions`, enable Developer mode, choose **Load unpacked**, select the `extension/` directory, and copy the extension ID.
+3. Start the companion from this directory with the exact extension origin:
 
    ```bash
-   BRIDA_API_KEY=... node companion/server.mjs
+   BRIDA_API_KEY=... BRIDA_EXTENSION_ORIGIN=chrome-extension://<extension-id> node companion/server.mjs
    ```
 
    `BRIDA_API_BASE_URL` may be set to an authorized Brida deployment. HTTP is accepted only for loopback development endpoints.
 
-3. Open `chrome://extensions`, enable Developer mode, choose **Load unpacked**, and select the `extension/` directory.
-4. Use the demo only on pages whose candidate text is safe for the Custom Reflex's `non_sensitive` data class.
+4. On a page whose candidate text is safe for the Custom Reflex's `non_sensitive` data class, click the extension action to scan the current tab.
 
 The demo does not block network requests or trackers. Exact ad/tracker blocking belongs in normal filter lists and browser/network policy; this example demonstrates the semantic remainder.
 
 ## Safety notes
 
 - Never add a Brida API key to extension source, storage, options, sync storage, logs, or analytics.
-- The companion accepts only Chrome-extension origins and returns only a normalized branch.
+- The companion accepts one exact configured Chrome-extension origin and returns only a normalized branch.
+- The extension requires an explicit user click and temporary `activeTab` access instead of persistent all-site content-script access.
 - Candidate text is bounded and the scan has a per-page cap.
 - Exact ad selectors are handled locally before Reflex.
 - `review` leaves the element visible.
