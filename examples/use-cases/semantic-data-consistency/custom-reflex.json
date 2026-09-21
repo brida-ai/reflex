@@ -62,6 +62,23 @@
         }
       },
       "expectedBranch": "exception_review"
+    },
+    {
+      "id": "synthetic-ambiguous-transition",
+      "evidenceClass": "synthetic",
+      "state": {
+        "recordType": "deployment_event",
+        "fields": {
+          "status": "completed",
+          "healthState": "unknown"
+        },
+        "semanticSummary": "The deployment appears to have completed, but the supplied evidence does not establish whether post-deploy health checks ran.",
+        "deterministicValidation": {
+          "schemaValid": true,
+          "knownInvariantViolation": false
+        }
+      },
+      "expectedBranch": "review"
     }
   ]
 }

@@ -63,6 +63,24 @@
         }
       },
       "expectedBranch": "impact_review"
+    },
+    {
+      "id": "synthetic-ambiguous-export-ui",
+      "evidenceClass": "synthetic",
+      "state": {
+        "policyChange": "Systems responsible for storing or deleting export files must record a deletion reason.",
+        "component": "Export lifecycle dashboard",
+        "componentResponsibilities": [
+          "display export status",
+          "allow an authorized user to request deletion",
+          "retention ownership is not documented in the supplied scope"
+        ],
+        "deterministicChecks": {
+          "explicitScopeExclusion": false,
+          "policyVersionCurrent": true
+        }
+      },
+      "expectedBranch": "review"
     }
   ]
 }
