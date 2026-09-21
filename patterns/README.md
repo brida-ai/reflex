@@ -30,4 +30,13 @@ Keep every protected side effect outside Reflex: tool calls, browser actions, me
 - [Compose Reflex with tools and models](compose-with-tools-and-models.md)
 - [Calibrate policy thresholds per engine and model version](engine-calibration.md)
 
+## Workflow blueprints
+
+These show how larger systems can use Reflex without pretending the whole workflow is a Reflex:
+
+- [Browser and computer use](browser-computer-use.md)
+- [Document processing](document-processing.md)
+- [Retrieval and RAG](retrieval-rag.md)
+- [Agent runtime](agent-runtime.md)
+
 The public Developer Preview examples use `non_sensitive` synthetic state. A pattern does not expand the data class or authority of a recipe or Custom Reflex.
