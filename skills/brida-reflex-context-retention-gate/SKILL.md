@@ -1,6 +1,6 @@
 ---
 name: brida-reflex-context-retention-gate
-description: "Implement and verify the Brida Reflex Context retention gate use case: classify one already-authorized context item as worth keeping verbatim, suitable for semantic compaction, safely low-value for the current bounded task, or ambiguous. Use when the user names context-retention-gate, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview. Triggers include: context compaction, context pruning, memory cleanup."
+description: "Implement and verify the Brida Reflex Context retention gate use case: classify one already-authorized context item as worth keeping verbatim, suitable for semantic compaction, safely low-value for the current bounded task, or ambiguous. Use when the user names context-retention-gate, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview. Triggers include: context compaction, context compression, context pruning, memory cleanup."
 ---
 
 # Context retention gate

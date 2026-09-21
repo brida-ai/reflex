@@ -7,7 +7,8 @@ Data class: `non_sensitive`
 
 ## Natural-language aliases
 
-- none
+- training data screening
+- dataset curation
 
 ## Decision
 

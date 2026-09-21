@@ -49,7 +49,7 @@ test('core Reflex skill is intent-first and has progressive references', async (
   assert.match(core, /Known use case -> implement directly/u)
   assert.match(core, /Open-ended discovery -> brief audit/u)
   assert.match(core, /Verification \/ benchmark -> test, do not assume/u)
-  for (const file of ['current-contract.md', 'discovery.md', 'implementation.md', 'verification.md', 'use-case-index.md']) {
+  for (const file of ['current-contract.md', 'discovery.md', 'implementation.md', 'question-design.md', 'composition.md', 'verification.md', 'use-case-index.md']) {
     await access(join(skillsRoot, 'brida-reflex', 'references', file))
   }
 })

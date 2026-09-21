@@ -7,6 +7,8 @@
 3. Reuse the exact semantics when they fit.
 4. Create a Custom Reflex only when the user's bounded decision is materially different.
 
+Before authoring a new contract, use [question-design.md](question-design.md) for question semantics and [composition.md](composition.md) when the workflow needs multiple independent judgments, retrieval/ranking, fan-out, cascades, or changing state.
+
 ## Contract
 
 A Custom Reflex must keep:

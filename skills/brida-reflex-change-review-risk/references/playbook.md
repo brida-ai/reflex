@@ -7,7 +7,9 @@ Data class: `non_sensitive`
 
 ## Natural-language aliases
 
-- none
+- code review triage
+- review depth
+- change risk
 
 ## Decision
 
