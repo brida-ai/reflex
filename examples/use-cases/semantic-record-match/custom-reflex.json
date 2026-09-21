@@ -30,11 +30,34 @@
   },
   "fixtures": [
     {
-      "id": "synthetic-alias-match",
+      "id": "synthetic-clear-semantic-match",
       "evidenceClass": "synthetic",
       "state": {
         "left": {
+          "name": "Northwind Research Laboratory",
+          "category": "materials_research_company",
+          "city": "Example City",
+          "focus": "battery materials research"
+        },
+        "right": {
           "name": "Northwind Research Labs",
+          "category": "materials_research_company",
+          "city": "Example City",
+          "focus": "research on battery materials"
+        },
+        "deterministicSignals": {
+          "exactIdentifierMatch": false,
+          "hardConflict": false
+        }
+      },
+      "expectedBranch": "match_candidate"
+    },
+    {
+      "id": "synthetic-ambiguous-alias",
+      "evidenceClass": "synthetic",
+      "state": {
+        "left": {
+          "name": "Northwind Research",
           "category": "research_company",
           "city": "Example City"
         },
@@ -45,10 +68,12 @@
         },
         "deterministicSignals": {
           "exactIdentifierMatch": false,
-          "hardConflict": false
+          "hardConflict": false,
+          "similarCandidateCount": 4,
+          "sharedUniqueFields": 0
         }
       },
-      "expectedBranch": "match_candidate"
+      "expectedBranch": "review"
     },
     {
       "id": "synthetic-hard-conflict",
