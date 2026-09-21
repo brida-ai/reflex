@@ -72,7 +72,7 @@
           "status": "completed",
           "healthState": "unknown"
         },
-        "semanticSummary": "The deployment appears to have completed, but the supplied evidence does not establish whether post-deploy health checks ran.",
+        "semanticSummary": "One supplied source says the deployment completed, while another says the rollout may still be in progress; no post-deploy health result is available.",
         "deterministicValidation": {
           "schemaValid": true,
           "knownInvariantViolation": false

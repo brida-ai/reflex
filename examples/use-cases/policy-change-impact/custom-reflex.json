@@ -36,8 +36,9 @@
         "policyChange": "Stored export files must now be deleted after seven days instead of thirty.",
         "component": "Static public documentation renderer",
         "componentResponsibilities": [
-          "render public documentation pages",
-          "serve versioned static assets"
+          "render public documentation pages from repository text",
+          "serve versioned static assets",
+          "does not store, delete, retain, or control user export files or export lifecycle metadata"
         ],
         "deterministicChecks": {
           "explicitScopeExclusion": false,
