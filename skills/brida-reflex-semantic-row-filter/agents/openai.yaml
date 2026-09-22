@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Semantic row filter"
+  short_description: "Implement the semantic-row-filter Reflex use case"
