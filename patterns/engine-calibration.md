@@ -46,6 +46,25 @@ Pool slices only when held-out evidence supports doing so. A threshold calibrate
 
 Changing the primitive also changes the measurement contract. A Binary formulation and a two-option Choice may express similar prose, but their probability behavior must be evaluated independently rather than assumed interchangeable.
 
+
+## Use a calibration passport
+
+A threshold is meaningful only together with the evidence that produced it. Treat calibration as a versioned artifact, not an unlabeled number in application code.
+
+Record at least:
+
+- Reflex/use-case and question-set version;
+- engine, model/checkpoint and runtime/backend version;
+- primitive type;
+- Choice cardinality bucket or Score rubric size where relevant;
+- workload/domain and language slice;
+- calibration corpus identity and immutable hash;
+- calibration method and artifact/version;
+- target branch/error-cost policy;
+- evaluation date and hardware/runtime notes when backend conversion can affect outputs.
+
+Two thresholds that happen to have the same numeric value are not interchangeable when their passports differ.
+
 ## Keep threshold policy replayable
 
 Store the raw semantic answer and probabilities separately from the host policy that interprets them.
@@ -61,6 +80,27 @@ For noisy state that crosses a threshold repeatedly, host policy may use hystere
 
 Version threshold and hysteresis policy independently from the Reflex definition and engine identity.
 
+
+## Distinguish answer probabilities from probability of correctness
+
+Some engines expose only a distribution over semantic answers. Others may also expose a separate confidence or correctness estimate.
+
+Those signals answer different questions:
+
+- **answer distribution** — which semantic answer the engine currently prefers and how probability mass is distributed among the declared answers;
+- **correctness/selective-automation signal** — how likely the selected answer is to be reliable enough for a policy decision.
+
+Do not assume the largest answer probability, distribution concentration, entropy-derived confidence or a vendor-named `confidence` field is automatically a calibrated probability of correctness.
+
+If an engine exposes multiple uncertainty signals:
+
+1. document exactly which signal the host policy uses;
+2. calibrate that signal on held-out target-workload data;
+3. keep the semantic answer/distribution separately for audit and replay;
+4. do not mix signals from different engines or model versions on one implicit scale.
+
+A Reflex contract should remain provider-neutral even when one engine has a richer uncertainty head than another.
+
 ## Do not tune away real errors
 
 Lowering a confidence threshold can reduce unnecessary review, but it also converts more model judgments into accepted branches.
@@ -72,6 +112,21 @@ Separate:
 - **contract mismatch** — the question/state shape does not fit the engine's supported behavior.
 
 Threshold tuning addresses only the first class.
+
+
+## Verify runtime and conversion fidelity separately
+
+Running the same checkpoint through a different serving/runtime path can change numerical behavior even when the public Reflex contract is unchanged.
+
+For local, edge or converted runtimes:
+
+1. freeze representative input/question fixtures;
+2. compare semantic answers and probability vectors against the admitted reference runtime;
+3. measure drift before measuring latency/throughput;
+4. record tokenizer/model/conversion/runtime hashes;
+5. reject a runtime port that materially changes decision quality, even if it is faster.
+
+Runtime fidelity is a separate gate from model quality. A faster backend is not a new engine identity, and a byte-compatible API is not proof of semantic equivalence.
 
 ## Benchmark layers
 
