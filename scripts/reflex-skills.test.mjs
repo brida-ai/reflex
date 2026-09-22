@@ -80,3 +80,15 @@ test('Claude plugin metadata exposes the Reflex skill pack', async () => {
   assert.equal(plugin.repository, 'https://github.com/brida-ai/reflex')
   assert.equal(plugin.license, 'Apache-2.0')
 })
+
+test('skills.sh groups every installable Reflex skill exactly once', async () => {
+  const config = JSON.parse(await readFile(join(repoRoot, 'skills.sh.json'), 'utf8'))
+  const grouped = config.groupings.flatMap((group) => group.skills)
+  const actual = (await readdir(skillsRoot, { withFileTypes: true }))
+    .filter((entry) => entry.isDirectory() && entry.name.startsWith('brida-reflex'))
+    .map((entry) => entry.name)
+    .sort()
+
+  assert.equal(grouped.length, new Set(grouped).size, 'skills.sh must not list a skill more than once')
+  assert.deepEqual([...grouped].sort(), actual)
+})
