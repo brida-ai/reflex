@@ -11,7 +11,8 @@ For every implemented use case:
 3. compare expected vs observed branches;
 4. test error/unknown output handling;
 5. test stale-state or authorization revalidation where relevant;
-6. add a small separately authored holdout before production reliance.
+6. for Choice, test option-order permutations and compare them with a fixed-order repeat control when the engine is nondeterministic;
+7. add a small separately authored holdout before production reliance.
 
 Record:
 
@@ -23,6 +24,22 @@ Record:
 - operational branch;
 - latency;
 - errors/coverage.
+
+## Invariance checks
+
+Typed output can still be brittle. Before production reliance, test controlled perturbations that should preserve the same gold answer:
+
+- Choice-option order permutations;
+- irrelevant structured fields and field ordering;
+- equivalent paraphrases;
+- bounded irrelevant/resolved distractors;
+- removal of context that is truly unnecessary.
+
+Keep each perturbation single-purpose so a failure is interpretable. Compare semantic-label flips, operational-branch flips and probability movement.
+
+For option-order tests, compare against repeated runs of the original order when the engine itself is nondeterministic. Do not confuse baseline noise with order sensitivity.
+
+If many candidate variants are searched, select on development data and verify the winner once on a frozen holdout. Do not tune on the final holdout or publish the best development score as unseen evidence.
 
 ## Engine comparison
 

@@ -76,6 +76,8 @@ Test:
 - near-boundary cases;
 - missing-evidence cases;
 - irrelevant-field perturbations;
-- equivalent paraphrases.
+- Choice-option order permutations;
+- equivalent paraphrases;
+- clearly irrelevant/resolved distractor perturbations.
 
 A typed answer proves interface shape, not truth.
