@@ -22,3 +22,19 @@ The same rule applies to low-risk classifications: “low risk” is not an appr
 ## Fail safely
 
 If the semantic evidence is missing, malformed or below the workflow's confidence requirement, route to an explicit review/fallback branch. Do not silently infer permission.
+
+## Persistent governance state belongs to the host
+
+Some systems accumulate evidence over time: repeated risk signals can reduce trust, require narrower delegation or trigger human review.
+
+Reflex may contribute one bounded piece of semantic evidence to that process. The application must own the durable governance state and its transitions.
+
+In particular:
+
+- do not let one high-confidence result create or restore permission;
+- record which evidence caused a deterministic policy transition;
+- define how human override or remediation changes the stored state;
+- re-check the current stored state before every protected action;
+- keep authorization, trust and delegation transitions replayable without rerunning the model.
+
+This keeps a probabilistic judgment from becoming an implicit capability token.

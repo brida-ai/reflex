@@ -16,6 +16,12 @@ Do not start from “what can the model answer?” and invent a workflow around 
 
 Do not encode runtime candidate IDs as a versioned Choice schema. Dynamic candidate generation/ranking stays a host workflow until Reflex has a first-class dynamic-candidate contract.
 
+## Do not assume equivalent-looking primitives behave the same
+
+A Binary question and a two-option Choice can describe similar semantics, but they are different measurement contracts. The same applies when a Score is replaced with categorical buckets.
+
+Choose the primitive from the meaning the application needs, then evaluate and calibrate that exact primitive. If you change question type later, treat the change like a contract change and re-run held-out evidence rather than carrying thresholds forward.
+
 ## State must contain the evidence
 
 Reflex does not inherit the host agent's hidden context.

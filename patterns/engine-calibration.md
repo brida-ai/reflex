@@ -30,6 +30,37 @@ Before an engine/model version is admitted for a Reflex:
 
 A model that chooses the expected top label but remains below the policy threshold is not operationally equivalent to a model whose probabilities are calibrated for that threshold.
 
+## Calibrate the slices you will actually serve
+
+A threshold can look acceptable in aggregate while failing on one language, domain, question type, option count or other recurring workload slice.
+
+Before sharing one threshold across slices, measure them separately. Useful slices include:
+
+- Binary, Choice and Score primitives;
+- Choice cardinality or nearby Score rubric sizes;
+- input language when multilingual traffic is expected;
+- materially different domains or task families;
+- short versus long or sparse versus evidence-rich state shapes.
+
+Pool slices only when held-out evidence supports doing so. A threshold calibrated on one language, domain, primitive or candidate-count distribution is not evidence for another.
+
+Changing the primitive also changes the measurement contract. A Binary formulation and a two-option Choice may express similar prose, but their probability behavior must be evaluated independently rather than assumed interchangeable.
+
+## Keep threshold policy replayable
+
+Store the raw semantic answer and probabilities separately from the host policy that interprets them.
+
+This lets the application:
+
+- replay a new threshold against recorded decisions without paying for fresh inference;
+- compare candidate policies before activation;
+- audit whether a behavior change came from the engine or from host policy;
+- apply different review bands without rewriting the Reflex contract.
+
+For noisy state that crosses a threshold repeatedly, host policy may use hysteresis: for example, one threshold to enter an automated state and a different threshold to leave it. Hysteresis is deterministic application policy, not a new model question.
+
+Version threshold and hysteresis policy independently from the Reflex definition and engine identity.
+
 ## Do not tune away real errors
 
 Lowering a confidence threshold can reduce unnecessary review, but it also converts more model judgments into accepted branches.
