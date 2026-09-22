@@ -34,6 +34,22 @@ Examples include:
 
 The host owns batching, concurrency, deduplication, ranking arithmetic and maximum-candidate limits.
 
+## An item score is not automatically a global ranking
+
+Evaluating each candidate independently can be excellent for relevance gates and thresholding. It does not by itself prove that sorting all returned probabilities produces a stable total order.
+
+If the workflow needs ranking rather than filtering, evaluate ranking behavior directly:
+
+- pairwise inversions against labeled preferences;
+- top-k recall/precision when only the first candidates matter;
+- ties and near-ties;
+- stability when unrelated candidates are added or removed;
+- sensitivity to batch size, candidate count and state projection.
+
+Do not compare scores from materially different questions, rubrics, engines or calibration profiles as though they shared one universal scale.
+
+If independent scores do not support the required ordering quality, use a ranking-specific composition such as pairwise comparisons, hierarchical selection or a future first-class dynamic-candidate contract. Keep the ranking arithmetic and tie policy in deterministic host code.
+
 ## First-class future capability
 
 A first-class dynamic-candidate Reflex would need more than a normal static Choice question.
