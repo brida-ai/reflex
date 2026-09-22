@@ -62,6 +62,7 @@
         "brida-reflex-semantic-cache-reuse-gate",
         "brida-reflex-semantic-data-consistency",
         "brida-reflex-semantic-record-match",
+        "brida-reflex-semantic-row-filter",
         "brida-reflex-dataset-example-quality",
         "brida-reflex-catalog-listing-signals"
       ]
@@ -71,6 +72,7 @@
       "description": "Lead, support, marketplace, document and operational review decisions.",
       "skills": [
         "brida-reflex-customer-support-ticket-triage",
+        "brida-reflex-incoming-message-triage",
         "brida-reflex-sales-lead-fit",
         "brida-reflex-marketplace-job-fit",
         "brida-reflex-meeting-utterance-triage",
