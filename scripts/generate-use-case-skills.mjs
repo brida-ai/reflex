@@ -22,6 +22,7 @@ const aliases = {
   'execution-failure-classification': ['failure classification', 'error triage', 'runtime failure'],
   'game-state-action': ['gameplay decision', 'game state', 'simulation action'],
   'incoming-message-risk': ['phishing', 'spam risk', 'inbound message risk'],
+  'incoming-message-triage': ['email triage', 'message triage', 'inbox triage', 'inbox routing', 'notification triage'],
   'memory-relevance-gate': ['memory relevance', 'remember this', 'memory gate'],
   'meeting-utterance-triage': ['meeting action items', 'meeting minutes', 'live meeting notes', 'action item detection', 'meeting triage'],
   'model-effort-routing': ['model routing', 'effort routing', 'model tier'],

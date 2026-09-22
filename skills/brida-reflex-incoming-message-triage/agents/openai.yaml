@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Incoming message triage"
+  short_description: "Implement the incoming-message-triage Reflex use case"
