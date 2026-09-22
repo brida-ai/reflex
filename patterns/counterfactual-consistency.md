@@ -22,10 +22,50 @@ Counterfactual pairs can test:
 - equivalent paraphrases;
 - non-material metadata;
 - ordering of independent fields;
+- permutation of Choice-option declaration order while label semantics stay fixed;
 - an explicitly non-decision-relevant synthetic attribute;
-- equivalent positive/negative framing of the same underlying facts.
+- equivalent positive/negative framing of the same underlying facts;
+- a clearly irrelevant or already-resolved distractor whose presence must not change the current gold decision.
 
 Use this to find brittle decision contracts, hidden correlations and engine-specific instability before admitting an engine/version.
+
+## Choice option-order invariance
+
+For a Choice Reflex, option order is presentation, not semantics. Test that explicitly.
+
+1. Hold state, instructions, criteria text and label meanings constant.
+2. Run several deterministic permutations of the declared options.
+3. Compare results by label identity, not by option position.
+4. If the engine is nondeterministic, run the original order the same number of times as a control so ordinary run-to-run noise is not blamed on permutation.
+5. Measure selected-label flips and probability movement for each label.
+
+If permutation-driven instability materially exceeds the fixed-order control, treat the engine/contract pair as not yet stable for that Choice. Do not solve this by choosing the luckiest option order on the same evaluation set.
+
+For a large or runtime-defined candidate set, prefer hierarchical or per-candidate host composition over relying on one very wide static Choice merely because one ordering happened to score well.
+
+## Distractor and salience checks
+
+A second useful pair keeps the gold decision fixed while adding bounded evidence that is true but explicitly irrelevant to the current question, such as an already-resolved prior event.
+
+Measure:
+
+- how often the semantic label changes;
+- how often a previously correct answer becomes wrong;
+- whether new errors disproportionately move toward the distractor's class rather than the engine's ordinary error distribution;
+- confidence/calibration movement even when the branch stays unchanged.
+
+The perturbation must genuinely preserve the gold semantics. If the added fact could reasonably change the correct answer, the pair is not an invariance test.
+
+## Search and tuning hygiene
+
+If you evaluate many question wordings, option orders, thresholds or state projections and keep the best, selection itself can create an apparent gain.
+
+- select/tune only on a development split;
+- keep a final frozen holdout unseen by the search;
+- keep the unmodified contract as a fixed baseline;
+- when useful, run a null/control search of comparable size to estimate how much apparent improvement the selection procedure can create without a real better policy.
+
+Do not report the best development variant as unseen evidence.
 
 ## Do not use a protected attribute casually
 
