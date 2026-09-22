@@ -1,0 +1,99 @@
+{
+  "id": "incoming-message-triage",
+  "version": "1",
+  "name": "Incoming message triage",
+  "max_state_bytes": 12288,
+  "data_class": "non_sensitive",
+  "question_set_version": "incoming-message-triage-questions@1",
+  "questions": {
+    "handlingClass": {
+      "type": "choice",
+      "instructions": "Classify the supplied already-admitted incoming message by the kind of attention it appears to need, based only on the supplied bounded message context after deterministic security and routing checks have run.",
+      "criteria": {
+        "action_required": "The message clearly asks the recipient for a response, decision, approval, answer, follow-up, scheduling change or another concrete action.",
+        "informational": "The message materially communicates an update, status, reference information or context but does not clearly ask the recipient to act.",
+        "routine_bulk": "The message is routine bulk, recurring or automated informational traffic with no individual response or action evident.",
+        "ambiguous": "The supplied message/context mixes handling signals or lacks enough evidence to distinguish the other classes reliably."
+      }
+    }
+  },
+  "policy_version": "incoming-message-triage-policy@1",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "handlingClass",
+    "branches": {
+      "action_required": "attention_candidate",
+      "informational": "normal_queue",
+      "routine_bulk": "low_priority_candidate",
+      "ambiguous": "review"
+    },
+    "minimumSelectedProbability": 0.78,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-action-required",
+      "evidenceClass": "synthetic",
+      "state": {
+        "channelClass": "email",
+        "senderRelationshipClass": "known_external_collaborator",
+        "excerpt": "Could you review the revised timeline and tell me by Thursday whether your team can support the new launch date?",
+        "contextSummary": "Existing project thread; no deterministic deadline/SLA rule applies.",
+        "deterministicSignals": {
+          "admitted": true,
+          "securityChecksPassed": true,
+          "knownBulkAutomation": false
+        }
+      },
+      "expectedBranch": "attention_candidate"
+    },
+    {
+      "id": "synthetic-informational",
+      "evidenceClass": "synthetic",
+      "state": {
+        "channelClass": "team_chat",
+        "senderRelationshipClass": "known_internal_teammate",
+        "excerpt": "The maintenance window finished successfully. All services are back to normal and the postmortem will be shared tomorrow.",
+        "contextSummary": "Status update only; no explicit request in the bounded context.",
+        "deterministicSignals": {
+          "admitted": true,
+          "securityChecksPassed": true,
+          "knownBulkAutomation": false
+        }
+      },
+      "expectedBranch": "normal_queue"
+    },
+    {
+      "id": "synthetic-routine-bulk",
+      "evidenceClass": "synthetic",
+      "state": {
+        "channelClass": "email",
+        "senderRelationshipClass": "known_service",
+        "excerpt": "Your weekly workspace digest is ready. Here is a summary of activity from the last seven days.",
+        "contextSummary": "Recurring informational digest.",
+        "deterministicSignals": {
+          "admitted": true,
+          "securityChecksPassed": true,
+          "knownBulkAutomation": true
+        }
+      },
+      "expectedBranch": "low_priority_candidate"
+    },
+    {
+      "id": "synthetic-ambiguous",
+      "evidenceClass": "synthetic",
+      "state": {
+        "channelClass": "crm_message",
+        "senderRelationshipClass": "known_customer",
+        "excerpt": "FYI, we reviewed the proposal. I may need your input on a couple of points, but I have not decided whether there is anything for you to do yet.",
+        "contextSummary": "The bounded context mixes an informational update with a possible future request, but no current action or decision is established.",
+        "deterministicSignals": {
+          "admitted": true,
+          "securityChecksPassed": true,
+          "knownBulkAutomation": false
+        }
+      },
+      "expectedBranch": "review"
+    }
+  ]
+}
