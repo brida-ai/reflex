@@ -1,0 +1,84 @@
+{
+  "id": "semantic-row-filter",
+  "version": "1",
+  "name": "Semantic row filter",
+  "max_state_bytes": 12288,
+  "data_class": "non_sensitive",
+  "question_set_version": "semantic-row-filter-questions@2",
+  "questions": {
+    "matchClass": {
+      "type": "choice",
+      "instructions": "Classify whether the supplied already-authorized row materially satisfies the stated qualitative predicate, clearly does not satisfy it, or lacks enough semantic evidence to decide reliably.",
+      "criteria": {
+        "matches": "The supplied row projection clearly satisfies the qualitative predicate in a material way.",
+        "does_not_match": "The supplied row projection clearly fails the qualitative predicate, is about a different concept, or only matches superficially.",
+        "insufficient_evidence": "The supplied row projection is mixed, underspecified, conditional, or leaves a material ambiguity that prevents a reliable yes/no judgment."
+      }
+    }
+  },
+  "policy_version": "semantic-row-filter-policy@2",
+  "declarative_policy": {
+    "type": "choice",
+    "questionId": "matchClass",
+    "branches": {
+      "matches": "include_candidate",
+      "does_not_match": "discard",
+      "insufficient_evidence": "review"
+    },
+    "minimumSelectedProbability": 0.78,
+    "uncertainBranch": "review"
+  },
+  "fixtures": [
+    {
+      "id": "synthetic-include",
+      "evidenceClass": "synthetic",
+      "state": {
+        "predicate": "The customer request is materially about exporting data for offline analysis.",
+        "rowProjection": {
+          "category": "data_tools",
+          "title": "CSV export",
+          "summary": "Download the current report as a CSV file for analysis in another tool."
+        },
+        "deterministicSignals": {
+          "authorized": true,
+          "exactFiltersPassed": true
+        }
+      },
+      "expectedBranch": "include_candidate"
+    },
+    {
+      "id": "synthetic-discard",
+      "evidenceClass": "synthetic",
+      "state": {
+        "predicate": "The customer request is materially about exporting data for offline analysis.",
+        "rowProjection": {
+          "category": "account_security",
+          "title": "Reset two-factor authentication",
+          "summary": "Replace the authenticator device used during sign-in."
+        },
+        "deterministicSignals": {
+          "authorized": true,
+          "exactFiltersPassed": true
+        }
+      },
+      "expectedBranch": "discard"
+    },
+    {
+      "id": "synthetic-review",
+      "evidenceClass": "synthetic",
+      "state": {
+        "predicate": "The customer request is materially about exporting data for offline analysis.",
+        "rowProjection": {
+          "category": "data_tools",
+          "title": "Share report",
+          "summary": "Make a report available outside the current workspace. The supplied excerpt does not say whether this creates a downloadable export or only an in-app share link."
+        },
+        "deterministicSignals": {
+          "authorized": true,
+          "exactFiltersPassed": true
+        }
+      },
+      "expectedBranch": "review"
+    }
+  ]
+}

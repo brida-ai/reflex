@@ -32,6 +32,7 @@ const aliases = {
   'semantic-cache-reuse-gate': ['semantic cache', 'cache reuse', 'semantic caching'],
   'semantic-content-blocking': ['adblock', 'ad blocker', 'semantic blocking', 'promotional DOM'],
   'semantic-record-match': ['entity matching', 'record matching', 'semantic match'],
+  'semantic-row-filter': ['semantic SQL', 'semantic filter', 'natural language SQL filter', 'row relevance'],
   'semantic-rule-check': ['semantic lint', 'qualitative lint', 'rule check'],
   'software-issue-triage': ['GitHub issue triage', 'bug triage', 'issue routing'],
   'sponsor-segment-detection': ['sponsor skip', 'sponsor detection', 'video sponsor'],
