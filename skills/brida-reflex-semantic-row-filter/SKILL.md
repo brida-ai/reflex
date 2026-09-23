@@ -1,6 +1,6 @@
 ---
 name: brida-reflex-semantic-row-filter
-description: "Implement and verify the Brida Reflex Semantic row filter use case: judge whether one already-authorized structured row satisfies one explicit qualitative predicate after exact SQL/database filters have already run. Use when the user names semantic-row-filter, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview. Triggers include: semantic SQL, semantic filter, natural language SQL filter, row relevance."
+description: "Implement and verify the Brida Reflex Semantic row filter use case: judge whether one already-authorized structured row satisfies one explicit qualitative predicate after exact SQL/database filters have already run. Use when the user names semantic-row-filter, asks for this exact bounded decision, or wants to integrate/test the matching Reflex without a discovery interview. Triggers include: semantic SQL, semantic filter, semantic grep, semantic predicate, semantic WHERE, natural language filter, natural language SQL filter, row relevance."
 ---
 
 # Semantic row filter
