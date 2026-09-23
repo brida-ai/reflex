@@ -9,6 +9,10 @@ Data class: `non_sensitive`
 
 - semantic SQL
 - semantic filter
+- semantic grep
+- semantic predicate
+- semantic WHERE
+- natural language filter
 - natural language SQL filter
 - row relevance
 
