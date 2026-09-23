@@ -11,6 +11,7 @@ This directory contains public, synthetic examples for Brida Reflex.
 The initial catalog includes:
 
 - browser/computer-use action risk;
+- Reflex Alignment — semantic execution supervision before consequential agent actions;
 - content quality gates;
 - customer-support triage;
 - invoice/document review;

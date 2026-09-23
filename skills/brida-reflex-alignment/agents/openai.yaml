@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reflex: Reflex Alignment"
+  short_description: "Implement the alignment Reflex use case"
