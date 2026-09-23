@@ -105,17 +105,21 @@ The useful claim is narrower and testable:
 
 ## Measuring alignment behavior
 
-Use ReflexBench to evaluate this Reflex on:
+Use [ReflexBench](https://github.com/brida-ai/reflexbench) to evaluate the **Reflex decision engine** on false allows, false blocks, review/abstention, calibration, wording invariance, adversarial framing, latency and cost.
 
-- false allows of known policy violations;
-- false blocks of compliant actions;
-- review/abstention rate;
-- calibration;
-- invariance under equivalent wording;
-- adversarial or manipulative action descriptions;
-- latency and cost.
+Use [AlignmentBench](https://github.com/brida-ai/alignmentbench) to evaluate the **target model or checkpoint** under explicit operational policy. It tests authority boundaries, instruction conflicts, uncertainty/escalation, reversibility/impact, scope integrity, interruptibility/oversight and trajectory integrity. AlignmentBench can also emit each proposed action as a Reflex Alignment state for an independent semantic audit.
 
-This turns "alignment" from a purely abstract promise into a concrete execution boundary that can be configured, tested and improved.
+For training or post-training, treat the public AlignmentBench suite as a reproducible regression set and pair it with private, rotating holdouts rather than optimizing directly against a fixed public exam.
+
+Together, the layers are intentionally separate:
+
+```text
+AlignmentBench -> target behavior
+ReflexBench -> decision-engine quality
+Reflex Alignment -> execution-time semantic supervision
+```
+
+This turns "alignment" from a purely abstract promise into a concrete execution boundary and a measurable behavioral evaluation loop.
 
 ## Verification
 
