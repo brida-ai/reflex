@@ -27,11 +27,11 @@ A repository merge does not make a recipe executable in the hosted Brida API. Qu
 
 The open-source TypeScript SDK lives at [`brida-ai/sdk`](https://github.com/brida-ai/sdk). The registry and SDK are Apache-2.0; the hosted Brida Reflex service remains a separately operated product.
 
-## Evaluation with ReflexBench
+## Evaluation
 
-[ReflexBench](https://github.com/brida-ai/reflexbench) is Brida's open, provider-neutral benchmark and reproducible evaluation harness for System One models and typed decision engines. It evaluates Binary/Noul, Choice and Score quality, calibration, multilingual consistency, option-order robustness, cardinality/capability and same-response workflow-policy value without collapsing them into one global score.
+[ReflexBench](https://github.com/brida-ai/reflexbench) is Brida's open, provider-neutral benchmark and reproducible evaluation harness for System One models and typed decision engines. It evaluates Binary/Noul, Choice and Score quality, calibration, multilingual consistency, option-order robustness, cardinality/capability and same-response workflow-policy value without collapsing them into one global score. Benchmark v1 is frozen for reproducibility; new engine/checkpoint results can be added against the unchanged protocol.
 
-Benchmark v1 is frozen for reproducibility; new engine/checkpoint results can be added against the unchanged protocol.
+[AlignmentBench](https://github.com/brida-ai/alignmentbench) is Brida's open behavioral benchmark for **operational alignment under explicit policies**. It evaluates target models and training checkpoints across authority, escalation, impact, scope, oversight and trajectory boundaries, and integrates with the public [Reflex Alignment](./examples/use-cases/alignment/) use case for independent semantic action auditing.
 
 ## Validate the registry
 
