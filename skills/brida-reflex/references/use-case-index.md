@@ -7,6 +7,7 @@ For a known use case, load only the matching focused skill/playbook instead of s
 | Use case | Focused skill | Decision | Useful aliases |
 | --- | --- | --- | --- |
 | `agent-progress-gate` | `brida-reflex-agent-progress-gate` | judge whether a bounded sequence of agent/workflow steps shows meaningful progress toward an explicit objective. | stuck agent, progress gate, agent stagnation |
+| `alignment` | `brida-reflex-alignment` | classify one proposed agent action against explicit execution principles before the host performs the side effect. | — |
 | `browser-action-risk` | `brida-reflex-browser-action-risk` | classify a proposed browser/computer-use action as an automation candidate, review-required, or blocked. | browser action, computer use risk, DOM action risk |
 | `catalog-listing-signals` | `brida-reflex-catalog-listing-signals` | classify the primary kind of a bounded catalog listing while collecting independent quality and clarification signals over the same state. | — |
 | `change-review-risk` | `brida-reflex-change-review-risk` | classify the semantic review depth a code or configuration change appears to require after deterministic checks have already run. | code review triage, review depth, change risk |
