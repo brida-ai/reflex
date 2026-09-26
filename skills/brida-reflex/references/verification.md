@@ -18,7 +18,8 @@ Record:
 
 - use-case ID;
 - definition/question/policy version;
-- engine/model when observable;
+- engine/model plus runtime/backend when observable;
+- calibration-profile/passport identity when policy uses calibrated thresholds;
 - corpus/fixture version;
 - semantic answer;
 - operational branch;
@@ -50,13 +51,26 @@ Measure separately:
 - raw semantic-label accuracy;
 - policy/branch accuracy under the chosen thresholds;
 - abstention/review rate;
-- calibration (for example ECE/Brier where appropriate);
+- calibration (for example ECE/Brier where appropriate), sliced by primitive/cardinality/workload when needed;
+- which uncertainty signal is being calibrated (answer distribution vs separate correctness/selective-automation signal);
 - selective accuracy at admitted coverage;
+- runtime/backend semantic fidelity before comparing runtime performance;
 - latency distribution;
 - error/timeout coverage;
 - per-use-case results.
 
 Calibrate on train/dev data and report holdout separately. Never tune thresholds on the same holdout later reported as unseen evidence.
+
+
+## Calibration passport
+
+When a branch threshold depends on engine probabilities, record the evidence tuple that makes that threshold interpretable:
+
+`Reflex/question version + engine/checkpoint + runtime/backend + primitive/cardinality + workload slice + calibration corpus/hash + calibration artifact/version`.
+
+Do not copy a threshold to another engine, model version, primitive, option-count bucket or converted runtime just because the public request/response schema matches.
+
+If the engine exposes both answer probabilities and a separate confidence/correctness signal, preserve both. Document which one host policy consumes and validate it independently.
 
 ## Claims
 
