@@ -6,7 +6,7 @@ Open declarative schemas, official recipes and synthetic fixtures for Brida Refl
 
 Reflex is a programmable semantic decision capability for making small, typed decisions before more expensive reasoning or action. A Reflex result is a **recommendation**, not authority to perform a protected side effect.
 
-> **Developer Preview source:** this registry repository is public. Hosted Brida Reflex customer traffic remains activation-gated until the route, email, funding and exact-SHA release gates are complete. Publishing or merging a recipe here never activates hosted execution.
+> **Archived product (November 2026):** hosted Brida Reflex is archived, and its evaluator now runs inside Brida ([notice](https://www.brida.ai/reflex)). This registry stays public as reference material: schemas, recipes, fixtures and examples. Publishing or merging a recipe here never activates hosted execution.
 
 ## What is here
 
